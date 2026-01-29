@@ -1893,7 +1893,6 @@
                     method: "POST",
                     mode: "no-cors", // ✅ CONTOURNEMENT CORS
                     body: JSON.stringify({
-                        order,
                         menuItems,
                         ts: Date.now()
                     })
@@ -1920,7 +1919,6 @@
                 lastSync = data.ts;
 
                 if (data.menuItems) menuItems.splice(0, menuItems.length, ...data.menuItems);
-                if (data.order) order = data.order;
 
                 initMenu();
                 startSync(); // ✅ ICI
