@@ -918,7 +918,7 @@
     <script>
         const DATA_URL = "https://script.google.com/macros/s/AKfycbxfgEKn9e__r_DTH0m1VwXg4G-UpFXY2TZdeGO0Wp2H9TAAsefZ21q9myIecO3TiYCpig/exec";
         
-        const menuItems = [
+        let menuItems = [
             { id: 'croissant', name: 'Croissant', cat: 'viennoiserie' },
             { id: 'pain-raisins', name: 'Pain aux raisins', cat: 'viennoiserie' },
             { id: 'mini-pain-choc', name: 'Mini pain au chocolat', cat: 'viennoiserie' },
@@ -943,6 +943,8 @@
             monsieur: {}
         };
 
+        let lastSync = 0;
+
         // Variables pour le mode édition
         let isEditMode = false;
         let tapCount = 0;
@@ -950,90 +952,17 @@
         let editingItemId = null;
         const EDIT_PASSWORD = 'bloub';
 
-        // ===== GESTION DES DONNÉES PERSISTANTES =====
-
-        function saveDataToStorage() {
-            const data = {
-                menuItems: menuItems,
-                order: order,
-                timestamp: new Date().toISOString()
-            };
-            localStorage.setItem('breakfastData', JSON.stringify(data));
-        }
-
-        function loadDataFromStorage() {
-            const savedData = localStorage.getItem('breakfastData');
-            if (savedData) {
-                try {
-                    const data = JSON.parse(savedData);
-                    // Vérifier si les données ne sont pas trop vieilles (24h max)
-                    const savedTime = new Date(data.timestamp);
-                    const now = new Date();
-                    const hoursDiff = (now - savedTime) / (1000 * 60 * 60);
-                    
-                    if (hoursDiff < 24) {
-                        // Restaurer les menuItems personnalisés seulement
-                        const customItems = data.menuItems.filter(item => item.id.startsWith('custom-'));
-                        if (customItems.length > 0) {
-                            // Ajouter les items personnalisés au menu existant
-                            customItems.forEach(customItem => {
-                                if (!menuItems.find(item => item.id === customItem.id)) {
-                                    menuItems.push(customItem);
-                                }
-                            });
-                        }
-                        
-                        // Restaurer la commande en cours
-                        if (data.order) {
-                            order = data.order;
-                        }
-                        
-                        console.log('Données restaurées depuis le localStorage');
-                        return true;
-                    }
-                } catch (error) {
-                    console.error('Erreur lors du chargement des données:', error);
-                }
-            }
-            return false;
-        }
-
-        function clearStorageData() {
-            localStorage.removeItem('breakfastData');
-        }
-
-        // Sauvegarder automatiquement les données à chaque modification
-        function autoSave() {
-            saveDataToStorage();
-        }
-
-        // Empêcher la fermeture accidentelle avec des données non sauvegardées
-        window.addEventListener('beforeunload', function(e) {
-            const hasOrder = Object.keys(order.madame).length > 0 || Object.keys(order.monsieur).length > 0;
-            if (hasOrder) {
-                saveDataToStorage();
-                // Message de confirmation (certains navigateurs l'affichent, d'autres non)
-                e.preventDefault();
-                e.returnValue = 'Vos données seront sauvegardées automatiquement.';
-            }
-        });
-
-        // Raccourci clavier pour effacer les données (Ctrl+Shift+C)
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-                if (confirm('Voulez-vous effacer toutes les données sauvegardées ?')) {
-                    clearStorageData();
-                    alert('Données effacées. La page va s\'actualiser.');
-                    location.reload();
-                }
-            }
-        });
+        // ===== INITIALISATION =====
 
         function initMenu() {
-            // Charger les données sauvegardées
-            loadDataFromStorage();
-            
-            // Générer le menu pour Madame
+            renderMenu();
+            renderSummary();
+            setupEditModeDetection();
+        }
+
+        // ===== FONCTIONS DE RENDU =====
+
+        function renderMenu() {
             const gridMadame = document.getElementById('menu-grid-madame');
             gridMadame.innerHTML = menuItems.map(item => `
                 <div class="card cat-${item.cat}">
@@ -1173,6 +1102,7 @@
             if (order[person][id].qty === 0) delete order[person][id];
             renderSummary();
             autoSave(); // Sauvegarder automatiquement
+            saveSharedOrder();
         }
 
         function renderSummary() {
@@ -1674,7 +1604,7 @@
         }
 
         window.onload = function() {
-            initMenu();
+            loadSharedOrder();
             setupEditModeDetection();
         };
 
@@ -1861,7 +1791,7 @@
                     delete order.monsieur[itemId];
                     renderMenuWithEditControls();
                     renderSummary();
-                    autoSave(); // Sauvegarder automatiquement
+                    saveSharedOrder();
                 }
             }
         }
@@ -1923,7 +1853,7 @@
             closeEditModal();
             renderMenuWithEditControls();
             renderSummary();
-            autoSave(); // Sauvegarder automatiquement
+            saveSharedOrder();
         }
 
         function closeEditModal() {
@@ -1942,6 +1872,43 @@
                 });
             }
         });
+
+        // ===== FONCTIONS DE SYNCHRONISATION PARTAGÉE =====
+
+        async function saveSharedOrder() {
+            try {
+                await fetch(DATA_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        order,
+                        menuItems,
+                        ts: Date.now()
+                    })
+                });
+            } catch (e) {
+                console.warn("Sauvegarde partagée échouée", e);
+            }
+        }
+
+        async function loadSharedOrder() {
+            try {
+                const res = await fetch(DATA_URL);
+                const data = await res.json();
+
+                if (data.ts && data.ts <= lastSync) return;
+                lastSync = data.ts;
+                
+                if (data.menuItems) menuItems.splice(0, menuItems.length, ...data.menuItems);
+                if (data.order) order = data.order;
+                initMenu();
+            } catch (e) {
+                console.warn("Lecture partagée échouée", e);
+            }
+        }
+
+        // Synchronisation automatique toutes les 3 secondes
+        setInterval(loadSharedOrder, 3000);
     </script>
 </body>
 </html>
