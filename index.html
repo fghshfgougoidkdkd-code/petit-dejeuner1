@@ -1896,26 +1896,37 @@
             if (isEditMode) return;
 
             try {
-                fetch(DATA_URL)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (!data.ts) {
+                fetch(DATA_URL, { mode: 'no-cors' })
+                    .then(res => {
+                        if (res.ok) return res.text();
+                        throw new Error('Network response was not ok');
+                    })
+                    .then(text => {
+                        try {
+                            const data = JSON.parse(text);
+                            if (!data.ts) {
+                                initMenu();
+                                startSync();
+                                return;
+                            }
+
+                            if (data.ts <= lastSync) return;
+                            lastSync = data.ts;
+
+                            if (data.menuItems) menuItems.splice(0, menuItems.length, ...data.menuItems);
+                            if (data.order) order = data.order;
+
                             initMenu();
                             startSync();
-                            return;
+                        } catch (e) {
+                            console.warn("Erreur d'analyse de la réponse", e);
                         }
-
-                        if (data.ts <= lastSync) return;
-                        lastSync = data.ts;
-
-                        if (data.menuItems) menuItems.splice(0, menuItems.length, ...data.menuItems);
-                        if (data.order) order = data.order;
-
-                        initMenu();
-                        startSync();
+                    })
+                    .catch(e => {
+                        console.warn("Erreur de chargement des données", e);
                     });
             } catch (e) {
-                console.warn("Lecture partagée échouée", e);
+                console.warn("Erreur lors de la requête de chargement", e);
             }
         }
 
