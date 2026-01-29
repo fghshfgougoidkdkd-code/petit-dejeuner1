@@ -1876,11 +1876,11 @@
 
         // ===== FONCTIONS DE SYNCHRONISATION PARTAGÉE =====
 
-        async function saveSharedOrder() {
+        function saveSharedOrder() {
             try {
-                await fetch(DATA_URL, {
+                fetch(DATA_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    mode: "no-cors",
                     body: JSON.stringify({
                         order,
                         menuItems,
@@ -1892,17 +1892,28 @@
             }
         }
 
-        async function loadSharedOrder() {
-            try {
-                const res = await fetch(DATA_URL);
-                const data = await res.json();
+        function loadSharedOrder() {
+            if (isEditMode) return;
 
-                if (data.ts && data.ts <= lastSync) return;
-                lastSync = data.ts;
-                
-                if (data.menuItems) menuItems.splice(0, menuItems.length, ...data.menuItems);
-                if (data.order) order = data.order;
-                initMenu();
+            try {
+                fetch(DATA_URL)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.ts) {
+                            initMenu();
+                            startSync();
+                            return;
+                        }
+
+                        if (data.ts <= lastSync) return;
+                        lastSync = data.ts;
+
+                        if (data.menuItems) menuItems.splice(0, menuItems.length, ...data.menuItems);
+                        if (data.order) order = data.order;
+
+                        initMenu();
+                        startSync();
+                    });
             } catch (e) {
                 console.warn("Lecture partagée échouée", e);
             }
