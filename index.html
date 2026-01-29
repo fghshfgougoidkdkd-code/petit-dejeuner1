@@ -915,9 +915,6 @@
         <!-- Bouton quitter mode édition -->
         <button id="edit-mode-toggle" class="edit-mode-toggle" onclick="exitEditMode()">Quitter le mode édition</button>
 
-        <!-- Bouton de test temporaire -->
-        <button onclick="testSendMail()" style="position: fixed; top: 20px; right: 20px; background: red; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; z-index: 9999;">TEST MAIL</button>
-
         <script>
             const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBF3iepDNQMUDqjsvZb7eJRUUR-GRqpEsK0mOzD0G9Tc-j0IIS18UNT3daRy7cIS3n5w/exec";
             
@@ -1866,16 +1863,6 @@
                 }
             });
 
-            function testSendMail() {
-                fetch(SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    body: JSON.stringify({
-                        test: "MAIL TEST OK",
-                        time: new Date().toISOString()
-                    })
-                });
-            }
         </script>
     </body>
     </html>
