@@ -1893,6 +1893,8 @@
         }
 
         async function loadSharedOrder() {
+            if (isEditMode) return; // ⛔ ne pas écraser le mode édition
+
             try {
                 const res = await fetch(DATA_URL);
                 const data = await res.json();
