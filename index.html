@@ -916,7 +916,7 @@
     <button id="edit-mode-toggle" class="edit-mode-toggle" onclick="exitEditMode()">Quitter le mode édition</button>
 
     <script>
-        const DATA_URL = "https://script.google.com/macros/s/AKfycby5mjMsioQIdXdnrvNLCAwE6809A2WoK0PUAcG5iNoW9Vo9cKS0hMnQuHF41DOpqlLcQQ/exec";
+        const DATA_URL = "https://script.google.com/macros/s/AKfycbzz2s71wrCpHO_v4INQW0Qwo8WmiMOD3jpkqMb424KOBqzjODzxyYZBX8QR8eizFn-7ug/exec";
         
         let menuItems = [];
 
@@ -1891,7 +1891,7 @@
             try {
                 await fetch(DATA_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    mode: "no-cors", // ✅ CONTOURNEMENT CORS
                     body: JSON.stringify({
                         order,
                         menuItems,
