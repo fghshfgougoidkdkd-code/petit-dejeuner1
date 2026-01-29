@@ -917,7 +917,31 @@
 
         <script>
             const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBjCG5w5QFqNrwq43rkeNYPDlCOuoUevOpoPZtEvMEGaAJtKqx6WnPr6wgWQApLA7bcw/exec";
+            const CLIENT_TOKEN = "CHANGE_ME_LONG_RANDOM_TOKEN";
             
+            function escapeHTML(str) {
+                return String(str).replace(/[&<>"']/g, (m) => ({
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#039;"
+                }[m]));
+            }
+
+            function saveOrderToStorage() {
+                try { localStorage.setItem("breakfast_order_v1", JSON.stringify(order)); } catch {}
+            }
+
+            function loadOrderFromStorage() {
+                try {
+                    const raw = localStorage.getItem("breakfast_order_v1");
+                    if (!raw) return;
+                    const parsed = JSON.parse(raw);
+                    if (parsed && parsed.madame && parsed.monsieur) order = parsed;
+                } catch {}
+            }
+
             let menuItems = [];
 
             let order = {
@@ -975,17 +999,17 @@
                 }
 
                 gridMadame.innerHTML = menuItems.map(item => `
-                    <div class="card cat-${item.cat}">
-                        <div class="head">${item.cat}</div>
+                    <div class="card cat-${escapeHTML(item.cat)}">
+                        <div class="head">${escapeHTML(item.cat)}</div>
                         <div class="content">
-                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${escapeHTML(item.name)}</div>
                             
                             <div class="item-controls">
                                 ${item.type === 'radio' ? `
                                     <div class="radio-group">
                                         ${item.options.map(option => `
                                             <label class="radio-container">
-                                                <input type="checkbox" name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${option}
+                                                <input type="checkbox" name="madame-${item.id}" value="${escapeHTML(option)}" onchange="updateRadio('madame', '${item.id}', '${escapeHTML(option)}', this.checked)"> ${escapeHTML(option)}
                                             </label>
                                         `).join('')}
                                     </div>
@@ -1003,17 +1027,17 @@
 
                 // Générer le menu pour Monsieur
                 gridMonsieur.innerHTML = menuItems.map(item => `
-                    <div class="card cat-${item.cat}">
-                        <div class="head">${item.cat}</div>
+                    <div class="card cat-${escapeHTML(item.cat)}">
+                        <div class="head">${escapeHTML(item.cat)}</div>
                         <div class="content">
-                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${escapeHTML(item.name)}</div>
                             
                             <div class="item-controls">
                                 ${item.type === 'radio' ? `
                                     <div class="radio-group">
                                         ${item.options.map(option => `
                                             <label class="radio-container">
-                                                <input type="checkbox" name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${option}
+                                                <input type="checkbox" name="monsieur-${item.id}" value="${escapeHTML(option)}" onchange="updateRadio('monsieur', '${item.id}', '${escapeHTML(option)}', this.checked)"> ${escapeHTML(option)}
                                             </label>
                                         `).join('')}
                                     </div>
@@ -1096,8 +1120,8 @@
                     // Si on décoche, supprimer la sélection
                     delete order[person][id];
                 }
+                saveOrderToStorage();   // ✅ AJOUT
                 renderSummary();
-                saveSharedOrder();
             }
 
             function changeQty(person, id, delta) {
@@ -1109,8 +1133,8 @@
                 document.getElementById(`qty-${person}-${id}`).innerText = order[person][id].qty;
                 
                 if (order[person][id].qty === 0) delete order[person][id];
+                saveOrderToStorage();   // ✅ AJOUT
                 renderSummary();
-                saveSharedOrder();
             }
 
             function renderSummary() {
@@ -1187,35 +1211,45 @@
                 countEl.innerText = total;
             }
 
-            function confirmOrder() {
+            async function confirmOrder() {
                 const madameItems = Object.keys(order.madame);
                 const monsieurItems = Object.keys(order.monsieur);
-                
+
                 if (madameItems.length === 0 && monsieurItems.length === 0) {
                     alert("Votre sélection est vide !");
                     return;
                 }
-                
+
                 // Afficher le modal de chargement
                 document.getElementById('loading-modal').style.display = 'flex';
-                
-                // Simuler l'envoi pendant 2 secondes
-                setTimeout(() => {
-                    // Cacher le modal de chargement
+
+                // Préparer les données une seule fois (important pour fallback)
+                const orderData = buildOrderData();
+
+                try {
+                    const ok = await sendOrderToScript(orderData);
+
+                    // Cacher le loading
                     document.getElementById('loading-modal').style.display = 'none';
-                    // Envoyer l'email
-                    sendOrderEmail();
-                    // Afficher le modal de confirmation avec animation de fondu
+
+                    if (!ok) {
+                        // Fallback mailto si le script ne répond pas / erreur
+                        fallbackToMailto(orderData);
+                        return;
+                    }
+
+                    // Modal confirmation
                     const confirmationModal = document.getElementById('confirmation-modal');
                     confirmationModal.style.display = 'flex';
-                    setTimeout(() => {
-                        confirmationModal.classList.add('show');
-                    }, 50);
-                }, 2000);
+                    setTimeout(() => confirmationModal.classList.add('show'), 50);
+
+                } catch (e) {
+                    document.getElementById('loading-modal').style.display = 'none';
+                    fallbackToMailto(orderData);
+                }
             }
 
-            function sendOrderEmail() {
-                // Préparer les données de la commande
+            function buildOrderData() {
                 const orderData = {
                     date: new Date().toLocaleDateString('fr-FR'),
                     heure: new Date().toLocaleTimeString('fr-FR'),
@@ -1223,37 +1257,69 @@
                     monsieur: {},
                     total: 0
                 };
-                
-                // Articles de Madame
-                const madameItems = Object.keys(order.madame);
-                madameItems.forEach(key => {
+
+                // Madame
+                Object.keys(order.madame).forEach(key => {
                     const item = order.madame[key];
                     orderData.madame[key] = {
                         name: item.name,
                         option: item.option || null,
                         qty: item.qty || null
                     };
-                    orderData.total++;
+
+                    // ✅ total correct
+                    if (item.qty) orderData.total += item.qty;
+                    else orderData.total += 1;
                 });
-                
-                // Articles de Monsieur
-                const monsieurItems = Object.keys(order.monsieur);
-                monsieurItems.forEach(key => {
+
+                // Monsieur
+                Object.keys(order.monsieur).forEach(key => {
                     const item = order.monsieur[key];
                     orderData.monsieur[key] = {
                         name: item.name,
                         option: item.option || null,
                         qty: item.qty || null
                     };
-                    orderData.total++;
+
+                    // ✅ total correct
+                    if (item.qty) orderData.total += item.qty;
+                    else orderData.total += 1;
                 });
-                
-                // Envoyer les données au Google Apps Script
+
+                return orderData;
+            }
+
+            /**
+             * Envoi avec réponse JSON (donc PAS no-cors).
+             * Retourne true/false.
+             */
+            async function sendOrderToScript(orderData) {
+                const payload = {
+                    action: "sendOrder",
+                    token: CLIENT_TOKEN,
+                    orderData
+                };
+
+                const res = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                // Si ton GAS n'est pas encore en JSON, ça plantera => on fallback
+                if (!res.ok) return false;
+
+                const data = await res.json().catch(() => null);
+                return !!(data && data.success);
+            }
+
+            function sendOrderEmail() {
+                const orderData = buildOrderData();
                 fetch(SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
-                    body: JSON.stringify({ order })
-                })
+                    body: JSON.stringify({ orderData })
+                });
             }
 
             function fallbackToMailto(orderData) {
@@ -1594,24 +1660,15 @@
                 }, 500);
             }
 
-            window.onload = function() {
-                loadMenuItems();
+            window.onload = function () {
+                loadOrderFromStorage();      // ✅ AJOUT
                 setupEditModeDetection();
             };
 
-            // ===== FONCTIONS DE SYNCHRONISATION PARTAGÉE =====
-
-        async function loadMenuItems() {
-            try {
-                const res = await fetch(SCRIPT_URL);
-                const data = await res.json();
-
-                if (data.menuItems && Array.isArray(data.menuItems)) {
-                    menuItems = data.menuItems;
-                    renderMenu();
-                }
-            } catch (e) {
-                console.error("Erreur chargement menu", e);
+        function onMenuLoaded(data) {
+            if (data.menuItems) {
+                menuItems = data.menuItems;
+                initMenu();
             }
         }
 
@@ -1664,35 +1721,48 @@
                 isEditMode = true;
                 document.body.classList.add('edit-mode');
                 document.getElementById('edit-mode-toggle').style.display = 'block';
-                renderMenu();
+                renderMenu();         // ✅ AJOUT
+                renderSummary();      // ✅ AJOUT
             }
 
             function exitEditMode() {
                 isEditMode = false;
                 document.body.classList.remove('edit-mode');
                 document.getElementById('edit-mode-toggle').style.display = 'none';
-                renderMenu();
+
+                fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: "saveMenu",
+                        token: CLIENT_TOKEN,
+                        menuItems: menuItems
+                    })
+                }).catch(() => { /* optionnel: message */ });
+
+                renderMenu();        // ✅ AJOUT
+                renderSummary();     // ✅ AJOUT
             }
 
             function renderMenuWithEditControls() {
                 // Générer le menu pour Madame avec contrôles d'édition
                 const gridMadame = document.getElementById('menu-grid-madame');
                 gridMadame.innerHTML = menuItems.map(item => `
-                    <div class="card cat-${item.cat}" data-item-id="${item.id}">
+                    <div class="card cat-${escapeHTML(item.cat)}" data-item-id="${item.id}">
                         <div class="edit-controls">
                             <button class="edit-btn edit" onclick="editItem('${item.id}')" title="Modifier">✏️</button>
                             <button class="edit-btn delete" onclick="deleteItem('${item.id}')" title="Supprimer">🗑️</button>
                         </div>
-                        <div class="head">${item.cat}</div>
+                        <div class="head">${escapeHTML(item.cat)}</div>
                         <div class="content">
-                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${escapeHTML(item.name)}</div>
                             
                             <div class="item-controls">
                                 ${item.type === 'radio' ? `
                                     <div class="radio-group">
                                         ${item.options.map(option => `
                                             <label class="radio-container">
-                                                <input type="checkbox" name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${option}
+                                                <input type="checkbox" name="madame-${item.id}" value="${escapeHTML(option)}" onchange="updateRadio('madame', '${item.id}', '${escapeHTML(option)}', this.checked)"> ${escapeHTML(option)}
                                             </label>
                                         `).join('')}
                                     </div>
@@ -1711,21 +1781,21 @@
                 // Générer le menu pour Monsieur avec contrôles d'édition
                 const gridMonsieur = document.getElementById('menu-grid-monsieur');
                 gridMonsieur.innerHTML = menuItems.map(item => `
-                    <div class="card cat-${item.cat}" data-item-id="${item.id}">
+                    <div class="card cat-${escapeHTML(item.cat)}" data-item-id="${item.id}">
                         <div class="edit-controls">
                             <button class="edit-btn edit" onclick="editItem('${item.id}')" title="Modifier">✏️</button>
                             <button class="edit-btn delete" onclick="deleteItem('${item.id}')" title="Supprimer">🗑️</button>
                         </div>
-                        <div class="head">${item.cat}</div>
+                        <div class="head">${escapeHTML(item.cat)}</div>
                         <div class="content">
-                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${escapeHTML(item.name)}</div>
                             
                             <div class="item-controls">
                                 ${item.type === 'radio' ? `
                                     <div class="radio-group">
                                         ${item.options.map(option => `
                                             <label class="radio-container">
-                                                <input type="checkbox" name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${option}
+                                                <input type="checkbox" name="monsieur-${item.id}" value="${escapeHTML(option)}" onchange="updateRadio('monsieur', '${item.id}', '${escapeHTML(option)}', this.checked)"> ${escapeHTML(option)}
                                             </label>
                                         `).join('')}
                                     </div>
@@ -1858,8 +1928,8 @@
                 }
                 
                 closeEditModal();
-                renderMenuWithEditControls();
-                renderSummary();
+                renderMenu();       // ✅ AJOUT
+                renderSummary();    // ✅ AJOUT
             }
 
             function closeEditModal() {
@@ -1880,6 +1950,7 @@
             });
 
         </script>
+        <script src="https://script.google.com/macros/s/AKfycbwBjCG5w5QFqNrwq43rkeNYPDlCOuoUevOpoPZtEvMEGaAJtKqx6WnPr6wgWQApLA7bcw/exec?callback=onMenuLoaded"></script>
     </body>
     </html>
 
