@@ -1876,11 +1876,11 @@
 
         // ===== FONCTIONS DE SYNCHRONISATION PARTAGÉE =====
 
-        function saveSharedOrder() {
+        async function saveSharedOrder() {
             try {
-                fetch(DATA_URL, {
+                await fetch(DATA_URL, {
                     method: "POST",
-                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         order,
                         menuItems,
@@ -1892,41 +1892,19 @@
             }
         }
 
-        function loadSharedOrder() {
-            if (isEditMode) return;
-
+        async function loadSharedOrder() {
             try {
-                fetch(DATA_URL, { mode: 'no-cors' })
-                    .then(res => {
-                        if (res.ok) return res.text();
-                        throw new Error('Network response was not ok');
-                    })
-                    .then(text => {
-                        try {
-                            const data = JSON.parse(text);
-                            if (!data.ts) {
-                                initMenu();
-                                startSync();
-                                return;
-                            }
+                const res = await fetch(DATA_URL);
+                const data = await res.json();
 
-                            if (data.ts <= lastSync) return;
-                            lastSync = data.ts;
-
-                            if (data.menuItems) menuItems.splice(0, menuItems.length, ...data.menuItems);
-                            if (data.order) order = data.order;
-
-                            initMenu();
-                            startSync();
-                        } catch (e) {
-                            console.warn("Erreur d'analyse de la réponse", e);
-                        }
-                    })
-                    .catch(e => {
-                        console.warn("Erreur de chargement des données", e);
-                    });
+                if (data.ts && data.ts <= lastSync) return;
+                lastSync = data.ts;
+                
+                if (data.menuItems) menuItems.splice(0, menuItems.length, ...data.menuItems);
+                if (data.order) order = data.order;
+                initMenu();
             } catch (e) {
-                console.warn("Erreur lors de la requête de chargement", e);
+                console.warn("Lecture partagée échouée", e);
             }
         }
 
