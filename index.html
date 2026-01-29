@@ -916,27 +916,9 @@
     <button id="edit-mode-toggle" class="edit-mode-toggle" onclick="exitEditMode()">Quitter le mode édition</button>
 
     <script>
-        const DATA_URL = "https://script.google.com/macros/s/AKfycbxfgEKn9e__r_DTH0m1VwXg4G-UpFXY2TZdeGO0Wp2H9TAAsefZ21q9myIecO3TiYCpig/exec";
+        const DATA_URL = "https://script.google.com/macros/s/AKfycbzFaeC4h3JnYDQdjR4mm7pTevOOaUwZIXnzyDa4ucNs1-jNV0TCpKTUCtpzWS1FyKqJ/exec";
         
-        let menuItems = [
-            { id: 'croissant', name: 'Croissant', cat: 'viennoiserie' },
-            { id: 'pain-raisins', name: 'Pain aux raisins', cat: 'viennoiserie' },
-            { id: 'mini-pain-choc', name: 'Mini pain au chocolat', cat: 'viennoiserie' },
-            { id: 'pancakes', name: 'Pancakes (x2)', cat: 'plat' },
-            { id: 'pain', name: 'Pain', cat: 'plat' },
-            { id: 'oeufs', name: 'Œufs brouillés', cat: 'plat' },
-            { id: 'bacon', name: 'Bacon grillé', cat: 'plat' },
-            { id: 'yaourt', name: 'Yaourt nature', cat: 'accompagnement' },
-            { id: 'beurre', name: 'Beurre', cat: 'accompagnement', type: 'radio', options: ['Doux', '1/2 sel'] },
-            { id: 'confiture', name: 'Confiture', cat: 'accompagnement', type: 'radio', options: ['Fruits rouges', 'Fruits exotiques'] },
-            { id: 'caramel', name: 'Caramel au beurre salé', cat: 'accompagnement' },
-            { id: 'nutella', name: 'Nutella', cat: 'accompagnement' },
-            { id: 'cafe', name: 'Dosette Café', cat: 'boisson', type: 'radio', options: ['Doux', 'Corsé'] },
-            { id: 'the', name: 'Sachet de Thé', cat: 'boisson', type: 'radio', options: ['Earl Grey', 'Vert menthe'] },
-            { id: 'choc-poudre', name: 'Chocolat poudre', cat: 'boisson' },
-            { id: 'lait', name: 'Lait (1/2L)', cat: 'boisson' },
-            { id: 'jus', name: 'Jus de fruit', cat: 'boisson', type: 'radio', options: ['Orange', 'Multifruits'] }
-        ];
+        let menuItems = [];
 
         let order = {
             madame: {},
