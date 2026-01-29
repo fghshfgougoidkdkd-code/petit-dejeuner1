@@ -916,7 +916,8 @@
         <button id="edit-mode-toggle" class="edit-mode-toggle" onclick="exitEditMode()">Quitter le mode édition</button>
 
         <script>
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBjCG5w5QFqNrwq43rkeNYPDlCOuoUevOpoPZtEvMEGaAJtKqx6WnPr6wgWQApLA7bcw/exec";
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyRWQHIRg_JB_4imuPrnxCb-pGSPs7Wsrw6gbPGmHPUJeFhXikCKeoZKKquMsuDzwtftw/exec";
+const EMAIL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6Q7Dh0tbIn20DFSquvgiEBcdQYXebLH-rtpKGXiMQWwrTi1DWCpMISpxoT2zsPSuN-g/exec";
             const CLIENT_TOKEN = "CHANGE_ME_LONG_RANDOM_TOKEN";
             
             function escapeHTML(str) {
@@ -1009,7 +1010,7 @@
                                     <div class="radio-group">
                                         ${item.options.map(option => `
                                             <label class="radio-container">
-                                                <input type="checkbox" name="madame-${item.id}" value="${escapeHTML(option)}" onchange="updateRadio('madame', '${item.id}', '${escapeHTML(option)}', this.checked)"> ${escapeHTML(option)}
+                                                <input type="checkbox" name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${escapeHTML(option)}
                                             </label>
                                         `).join('')}
                                     </div>
@@ -1037,7 +1038,7 @@
                                     <div class="radio-group">
                                         ${item.options.map(option => `
                                             <label class="radio-container">
-                                                <input type="checkbox" name="monsieur-${item.id}" value="${escapeHTML(option)}" onchange="updateRadio('monsieur', '${item.id}', '${escapeHTML(option)}', this.checked)"> ${escapeHTML(option)}
+                                                <input type="checkbox" name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${escapeHTML(option)}
                                             </label>
                                         `).join('')}
                                     </div>
@@ -1156,7 +1157,7 @@
                     return;
                 }
 
-                let total = 0;
+                const orderData = buildOrderData();
                 let html = '';
 
                 // Afficher les articles de Madame
@@ -1166,16 +1167,14 @@
                         const item = order.madame[key];
                         let details = '';
                         if (item.option) {
-                            total += 1;
-                            details = `Option: ${item.option}`;
+                            details = `Option: ${escapeHTML(item.option)}`;
                         } else if (item.qty) {
-                            total += item.qty;
                             details = `Quantité: ${item.qty}`;
                         }
                         return `
                             <div class="summary-item" style="animation-delay: ${index * 0.1}s">
                                 <div>
-                                    <strong>${item.name}</strong><br>
+                                    <strong>${escapeHTML(item.name)}</strong><br>
                                     <small>${details}</small>
                                 </div>
                             </div>
@@ -1190,16 +1189,14 @@
                         const item = order.monsieur[key];
                         let details = '';
                         if (item.option) {
-                            total += 1;
-                            details = `Option: ${item.option}`;
+                            details = `Option: ${escapeHTML(item.option)}`;
                         } else if (item.qty) {
-                            total += item.qty;
                             details = `Quantité: ${item.qty}`;
                         }
                         return `
                             <div class="summary-item" style="animation-delay: ${(madameItems.length + index) * 0.1}s">
                                 <div>
-                                    <strong>${item.name}</strong><br>
+                                    <strong>${escapeHTML(item.name)}</strong><br>
                                     <small>${details}</small>
                                 </div>
                             </div>
@@ -1208,7 +1205,7 @@
                 }
                 
                 container.innerHTML = html;
-                countEl.innerText = total;
+                countEl.innerText = orderData.total;
             }
 
             async function confirmOrder() {
@@ -1300,7 +1297,7 @@
                     orderData
                 };
 
-                const res = await fetch(SCRIPT_URL, {
+                const res = await fetch(EMAIL_SCRIPT_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
@@ -1762,7 +1759,7 @@
                                     <div class="radio-group">
                                         ${item.options.map(option => `
                                             <label class="radio-container">
-                                                <input type="checkbox" name="madame-${item.id}" value="${escapeHTML(option)}" onchange="updateRadio('madame', '${item.id}', '${escapeHTML(option)}', this.checked)"> ${escapeHTML(option)}
+                                                <input type="checkbox" name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${escapeHTML(option)}
                                             </label>
                                         `).join('')}
                                     </div>
@@ -1795,7 +1792,7 @@
                                     <div class="radio-group">
                                         ${item.options.map(option => `
                                             <label class="radio-container">
-                                                <input type="checkbox" name="monsieur-${item.id}" value="${escapeHTML(option)}" onchange="updateRadio('monsieur', '${item.id}', '${escapeHTML(option)}', this.checked)"> ${escapeHTML(option)}
+                                                <input type="checkbox" name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${escapeHTML(option)}
                                             </label>
                                         `).join('')}
                                     </div>
