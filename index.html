@@ -1608,7 +1608,7 @@
             }
 
             window.onload = function() {
-                loadSharedOrder();
+                initMenu();
                 setupEditModeDetection();
             };
 
@@ -1659,7 +1659,6 @@
 
             function enableEditMode() {
                 isEditMode = true;
-                stopSync(); // ⛔ STOP synchro
                 document.body.classList.add('edit-mode');
                 document.getElementById('edit-mode-toggle').style.display = 'block';
                 renderMenu();
@@ -1669,9 +1668,7 @@
                 isEditMode = false;
                 document.body.classList.remove('edit-mode');
                 document.getElementById('edit-mode-toggle').style.display = 'none';
-                saveSharedOrder(); // ✅ pousser l'état final
-                loadSharedOrder(); // 🔄 recharger proprement
-                startSync();       // 🔁 reprendre la synchro
+                renderMenu();
             }
 
             function renderMenuWithEditControls() {
@@ -1798,7 +1795,6 @@
                         delete order.monsieur[itemId];
                         renderMenuWithEditControls();
                         renderSummary();
-                        saveSharedOrder();
                     }
                 }
             }
@@ -1847,7 +1843,7 @@
                         id: 'custom-' + Date.now(),
                         name: name,
                         cat: category,
-                        type: type // ✅ AJOUT CRUCIAL
+                        type: type 
                     };
                     
                     if (type === 'radio') {
@@ -1861,7 +1857,6 @@
                 closeEditModal();
                 renderMenuWithEditControls();
                 renderSummary();
-                saveSharedOrder();
             }
 
             function closeEditModal() {
@@ -1881,61 +1876,8 @@
                 }
             });
 
-            // ===== FONCTIONS DE SYNCHRONISATION PARTAGÉE =====
-
-            async function saveSharedOrder() {
-                try {
-                    await fetch(DATA_URL, {
-                        method: "POST",
-                        mode: "no-cors", // ✅ CONTOURNEMENT CORS
-                        body: JSON.stringify({
-                            menuItems,
-                            ts: Date.now()
-                        })
-                    });
-                } catch (e) {
-                    console.warn("Sauvegarde partagée échouée", e);
-                }
-            }
-
-            async function loadSharedOrder() {
-                if (isEditMode) return;
-
-                try {
-                    const res = await fetch(DATA_URL);
-                    const data = await res.json();
-
-                    if (!data.ts) {
-                        initMenu();
-                        startSync(); // ✅ ICI
-                        return;
-                    }
-
-                    if (data.ts <= lastSync) return;
-                    lastSync = data.ts;
-
-                    if (data.menuItems) menuItems.splice(0, menuItems.length, ...data.menuItems);
-
-                    initMenu();
-                    startSync(); // ✅ ICI
-                } catch (e) {
-                    console.warn("Lecture partagée échouée", e);
-                }
-            }
-
-            function startSync() {
-                if (!syncInterval) {
-                    syncInterval = setInterval(loadSharedOrder, 3000);
-                }
-            }
-
-            function stopSync() {
-                clearInterval(syncInterval);
-                syncInterval = null;
-            }
-
             function testSendMail() {
-                fetch("https://script.google.com/macros/s/AKfycbzz2s71wrCpHO_v4INQW0Qwo8WmiMOD3jpkqMb424KOBqzjODzxyYZBX8QR8eizFn-7ug/exec", {
+                fetch(DATA_URL, {
                     method: "POST",
                     mode: "no-cors",
                     body: JSON.stringify({
