@@ -1931,6 +1931,17 @@
             clearInterval(syncInterval);
             syncInterval = null;
         }
+
+        function testSendMail() {
+            fetch("https://script.google.com/macros/s/AKfycbwKpP2502Dp6Ad8kIQZ-vXeOQXaErgakFVaAPyTdzJypOrcLP8QVAcNgBBRGG6D5s9A/exec", {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify({
+                    test: "MAIL TEST OK",
+                    time: new Date().toISOString()
+                })
+            });
+        }
     </script>
 </body>
 </html>
