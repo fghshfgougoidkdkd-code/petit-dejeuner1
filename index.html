@@ -919,7 +919,7 @@
         <button onclick="testSendMail()" style="position: fixed; top: 20px; right: 20px; background: red; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; z-index: 9999;">TEST MAIL</button>
 
         <script>
-            const DATA_URL = "https://script.google.com/macros/s/AKfycbzHYEykTkQYNeSvOR4Y6R-hJF_y-oAq0VYQJGWWbAd2LEJcwCNCN1rahbnpd_6tdC8CHA/exec";
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzz2s71wrCpHO_v4INQW0Qwo8WmiMOD3jpkqMb424KOBqzjODzxyYZBX8QR8eizFn-7ug/exec";
             
             let menuItems = [];
 
@@ -1252,21 +1252,11 @@
                 });
                 
                 // Envoyer les données au Google Apps Script
-                fetch("https://script.google.com/macros/s/AKfycbzz2s71wrCpHO_v4INQW0Qwo8WmiMOD3jpkqMb424KOBqzjODzxyYZBX8QR8eizFn-7ug/exec", {
+                fetch(SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
-                    body: JSON.stringify({
-                        order: order
-                    })
+                    body: JSON.stringify({ order })
                 })
-                .then(response => {
-                    console.log('Email envoyé avec succès');
-                })
-                .catch(error => {
-                    console.error('Erreur lors de l\'envoi:', error);
-                    // En cas d'erreur, proposer le mailto comme fallback
-                    fallbackToMailto(orderData);
-                });
             }
 
             function fallbackToMailto(orderData) {
@@ -1877,7 +1867,7 @@
             });
 
             function testSendMail() {
-                fetch(DATA_URL, {
+                fetch(SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
                     body: JSON.stringify({
