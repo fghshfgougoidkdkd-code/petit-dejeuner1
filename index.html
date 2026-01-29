@@ -1248,20 +1248,14 @@
                 orderData.total++;
             });
             
-            // URL de votre Google Apps Script déployé
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbw0NncEARZ5Ar_eQb6tnPPpYe-U_CEz6P4h35BA_tUE6nMtSKi18GM9kwF1xdmlcCHE/exec';
-            
             // Envoyer les données au Google Apps Script
-            fetch(scriptUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            fetch("https://script.google.com/macros/s/AKfycbzHLHpCdQj9vo-mtNi16NBd1pzN7ui5y3KBQmaJrIagEmEZ47S_yV5SGrva5MNbTrKM/exec", {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    email: 'ninotelephone1006@gmail.com',
-                    orderData: orderData
-                }),
-                mode: 'no-cors'
+                    order: order
+                })
             })
             .then(response => {
                 console.log('Email envoyé avec succès');
