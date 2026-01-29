@@ -916,7 +916,7 @@
     <button id="edit-mode-toggle" class="edit-mode-toggle" onclick="exitEditMode()">Quitter le mode édition</button>
 
     <script>
-        const DATA_URL = "https://script.google.com/macros/s/AKfycbzFaeC4h3JnYDQdjR4mm7pTevOOaUwZIXnzyDa4ucNs1-jNV0TCpKTUCtpzWS1FyKqJ/exec";
+        const DATA_URL = "https://script.google.com/macros/s/AKfycbzz2s71wrCpHO_v4INQW0Qwo8WmiMOD3jpkqMb424KOBqzjODzxyYZBX8QR8eizFn-7ug/exec";
         
         let menuItems = [];
 
@@ -926,6 +926,7 @@
         };
 
         let lastSync = 0;
+        let syncInterval = null;
 
         // Variables pour le mode édition
         let isEditMode = false;
@@ -939,12 +940,19 @@
         function initMenu() {
             renderMenu();
             renderSummary();
-            setupEditModeDetection();
         }
 
         // ===== FONCTIONS DE RENDU =====
 
         function renderMenu() {
+            if (isEditMode) {
+                renderMenuWithEditControls();
+                return;
+            }
+            renderMenuNormal();
+        }
+
+        function renderMenuNormal() {
             const gridMadame = document.getElementById('menu-grid-madame');
             const gridMonsieur = document.getElementById('menu-grid-monsieur');
 
@@ -1089,7 +1097,7 @@
                 delete order[person][id];
             }
             renderSummary();
-            autoSave(); // Sauvegarder automatiquement
+            saveSharedOrder();
         }
 
         function changeQty(person, id, delta) {
@@ -1102,7 +1110,6 @@
             
             if (order[person][id].qty === 0) delete order[person][id];
             renderSummary();
-            autoSave(); // Sauvegarder automatiquement
             saveSharedOrder();
         }
 
@@ -1241,8 +1248,8 @@
                 orderData.total++;
             });
             
-            // URL du Google Apps Script déployé
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbyBm0mBzthFE-uWBoC9HWEFZvYmJeDvz4eVvZJYZjaSe_0Pla073vucXZMAmTZHiD5Y3w/exec';
+            // URL de votre Google Apps Script déployé
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbw0NncEARZ5Ar_eQb6tnPPpYe-U_CEz6P4h35BA_tUE6nMtSKi18GM9kwF1xdmlcCHE/exec';
             
             // Envoyer les données au Google Apps Script
             fetch(scriptUrl, {
@@ -1656,16 +1663,19 @@
 
         function enableEditMode() {
             isEditMode = true;
+            stopSync(); // ⛔ STOP synchro
             document.body.classList.add('edit-mode');
             document.getElementById('edit-mode-toggle').style.display = 'block';
-            renderMenuWithEditControls();
+            renderMenu();
         }
 
         function exitEditMode() {
             isEditMode = false;
             document.body.classList.remove('edit-mode');
             document.getElementById('edit-mode-toggle').style.display = 'none';
-            initMenu(); // Recharger le menu sans les contrôles d'édition
+            saveSharedOrder(); // ✅ pousser l'état final
+            loadSharedOrder(); // 🔄 recharger proprement
+            startSync();       // 🔁 reprendre la synchro
         }
 
         function renderMenuWithEditControls() {
@@ -1840,7 +1850,8 @@
                 const newItem = {
                     id: 'custom-' + Date.now(),
                     name: name,
-                    cat: category
+                    cat: category,
+                    type: type // ✅ AJOUT CRUCIAL
                 };
                 
                 if (type === 'radio') {
@@ -1880,7 +1891,7 @@
             try {
                 await fetch(DATA_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    mode: "no-cors", // ✅ CONTOURNEMENT CORS
                     body: JSON.stringify({
                         order,
                         menuItems,
@@ -1893,23 +1904,41 @@
         }
 
         async function loadSharedOrder() {
+            if (isEditMode) return;
+
             try {
                 const res = await fetch(DATA_URL);
                 const data = await res.json();
 
-                if (data.ts && data.ts <= lastSync) return;
+                if (!data.ts) {
+                    initMenu();
+                    startSync(); // ✅ ICI
+                    return;
+                }
+
+                if (data.ts <= lastSync) return;
                 lastSync = data.ts;
-                
+
                 if (data.menuItems) menuItems.splice(0, menuItems.length, ...data.menuItems);
                 if (data.order) order = data.order;
+
                 initMenu();
+                startSync(); // ✅ ICI
             } catch (e) {
                 console.warn("Lecture partagée échouée", e);
             }
         }
 
-        // Synchronisation automatique toutes les 3 secondes
-        setInterval(loadSharedOrder, 3000);
+        function startSync() {
+            if (!syncInterval) {
+                syncInterval = setInterval(loadSharedOrder, 3000);
+            }
+        }
+
+        function stopSync() {
+            clearInterval(syncInterval);
+            syncInterval = null;
+        }
     </script>
 </body>
 </html>
