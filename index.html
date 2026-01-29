@@ -946,6 +946,26 @@
 
         function renderMenu() {
             const gridMadame = document.getElementById('menu-grid-madame');
+            const gridMonsieur = document.getElementById('menu-grid-monsieur');
+
+            if (menuItems.length === 0 && !isEditMode) {
+                const emptyHtml = `
+                    <div style="grid-column: 1 / -1; text-align: center; opacity: 0.6; padding: 40px;">
+                        <div style="font-size: 2rem;">🍽️</div>
+                        <div style="font-size: 1.1rem; margin-top: 10px;">
+                            Menu en cours de préparation…
+                        </div>
+                        <div style="font-size: 0.9rem; margin-top: 5px;">
+                            (Activer le mode édition pour ajouter des articles)
+                        </div>
+                    </div>
+                `;
+                gridMadame.innerHTML = emptyHtml;
+                gridMonsieur.innerHTML = emptyHtml;
+                renderSummary();
+                return;
+            }
+
             gridMadame.innerHTML = menuItems.map(item => `
                 <div class="card cat-${item.cat}">
                     <div class="head">${item.cat}</div>
@@ -974,7 +994,6 @@
             `).join('');
 
             // Générer le menu pour Monsieur
-            const gridMonsieur = document.getElementById('menu-grid-monsieur');
             gridMonsieur.innerHTML = menuItems.map(item => `
                 <div class="card cat-${item.cat}">
                     <div class="head">${item.cat}</div>
