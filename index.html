@@ -1595,11 +1595,27 @@
             }
 
             window.onload = function() {
-                initMenu();
+                loadMenuItems();
                 setupEditModeDetection();
             };
 
-            // ===== FONCTIONS MODE ÉDITION =====
+            // ===== FONCTIONS DE SYNCHRONISATION PARTAGÉE =====
+
+        async function loadMenuItems() {
+            try {
+                const res = await fetch(SCRIPT_URL);
+                const data = await res.json();
+
+                if (data.menuItems && Array.isArray(data.menuItems)) {
+                    menuItems = data.menuItems;
+                    renderMenu();
+                }
+            } catch (e) {
+                console.error("Erreur chargement menu", e);
+            }
+        }
+
+        // ===== FONCTIONS MODE ÉDITION =====
 
             function setupEditModeDetection() {
                 document.addEventListener('click', function(event) {
