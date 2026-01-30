@@ -419,6 +419,46 @@
             transform: translateY(-1px);
         }
 
+        .button-secondary {
+            width: 100%;
+            padding: 10px;
+            background: var(--pink-light);
+            border: 2px solid var(--pink-medium);
+            border-radius: var(--border-radius-soft);
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .button-secondary:hover {
+            background: var(--pink-medium);
+            transform: translateY(-2px);
+        }
+
+        .out-of-stock {
+            opacity: 0.55;
+            filter: grayscale(1);
+        }
+
+        .out-of-stock .item-controls {
+            pointer-events: none;
+        }
+
+        .out-of-stock-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #f44336;
+            color: #fff;
+            font-weight: 800;
+            font-size: 12px;
+            border: 2px solid #cc0000;
+        }
+
         /* Modal Romantique */
         .modal {
             display: none;
@@ -862,6 +902,8 @@
                             Articles : <span id="total-count">0</span>
                         </div>
                         <button class="button-send" onclick="confirmOrder()">Envoyer</button>
+                        <div style="height:10px;"></div>
+                        <button class="button-secondary" onclick="clearCart()">Vider la sélection</button>
                     </div>
                 </div>
             </aside>
@@ -930,6 +972,12 @@
                         <option value="quantity">Quantité (0-2)</option>
                         <option value="radio">Options uniques</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="item-outofstock">Disponibilité :</label>
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" id="item-outofstock"> Rupture de stock
+                    </label>
                 </div>
                 <div class="form-group" id="options-group" style="display: none;">
                     <label for="item-options">Options (une par ligne) :</label>
@@ -1097,7 +1145,23 @@
             renderMenuNormal();
         }
 
+        function pruneOutOfStockFromOrder() {
+            const byId = {};
+            menuItems.forEach(function(it){ byId[it.id] = it; });
+
+            ['madame','monsieur'].forEach(function(person){
+                Object.keys(order[person] || {}).forEach(function(itemId){
+                    const mi = byId[itemId];
+                    if (mi && mi.outOfStock) {
+                        delete order[person][itemId];
+                    }
+                });
+            });
+            saveCart();
+        }
+
         function renderMenuNormal() {
+            pruneOutOfStockFromOrder();
             const gridMadame = document.getElementById('menu-grid-madame');
             const gridMonsieur = document.getElementById('menu-grid-monsieur');
 
@@ -1120,25 +1184,26 @@
             }
 
             gridMadame.innerHTML = menuItems.map(item => `
-                <div class="card cat-${item.cat}">
+                <div class="card cat-${item.cat} ${item.outOfStock ? 'out-of-stock' : ''}">
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                        ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
                                 <div class="radio-group">
                                     ${item.options.map(option => `
                                         <label class="radio-container">
-                                            <input type="checkbox" name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${option}
+                                            <input type="checkbox" ${item.outOfStock ? 'disabled' : ''} name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${option}
                                         </label>
                                     `).join('')}
                                 </div>
                             ` : `
                                 <div class="quantity-controls">
-                                    <button class="btn-qty" onclick="changeQty('madame', '${item.id}', -1)">-</button>
+                                    <button class="btn-qty" ${item.outOfStock ? 'disabled' : ''} onclick="changeQty('madame', '${item.id}', -1)">-</button>
                                     <span id="qty-madame-${item.id}">0</span>
-                                    <button class="btn-qty" onclick="changeQty('madame', '${item.id}', 1)">+</button>
+                                    <button class="btn-qty" ${item.outOfStock ? 'disabled' : ''} onclick="changeQty('madame', '${item.id}', 1)">+</button>
                                 </div>
                             `}
                         </div>
@@ -1148,25 +1213,26 @@
 
             // Générer le menu pour Monsieur
             gridMonsieur.innerHTML = menuItems.map(item => `
-                <div class="card cat-${item.cat}">
+                <div class="card cat-${item.cat} ${item.outOfStock ? 'out-of-stock' : ''}">
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                        ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
                                 <div class="radio-group">
                                     ${item.options.map(option => `
                                         <label class="radio-container">
-                                            <input type="checkbox" name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${option}
+                                            <input type="checkbox" ${item.outOfStock ? 'disabled' : ''} name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${option}
                                         </label>
                                     `).join('')}
                                 </div>
                             ` : `
                                 <div class="quantity-controls">
-                                    <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', -1)">-</button>
+                                    <button class="btn-qty" ${item.outOfStock ? 'disabled' : ''} onclick="changeQty('monsieur', '${item.id}', -1)">-</button>
                                     <span id="qty-monsieur-${item.id}">0</span>
-                                    <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', 1)">+</button>
+                                    <button class="btn-qty" ${item.outOfStock ? 'disabled' : ''} onclick="changeQty('monsieur', '${item.id}', 1)">+</button>
                                 </div>
                             `}
                         </div>
@@ -1220,6 +1286,10 @@
         }
 
         function updateRadio(person, id, option, checked) {
+            const mi = menuItems.find(m => m.id === id);
+            if (mi && mi.outOfStock) {
+                return;
+            }
             if (checked) {
                 // Si on coche une option, vérifier si c'est la même déjà sélectionnée
                 if (order[person][id] && order[person][id].option === option) {
@@ -1245,6 +1315,10 @@
         }
 
         function changeQty(person, id, delta) {
+            const mi = menuItems.find(m => m.id === id);
+            if (mi && mi.outOfStock) {
+                return;
+            }
             if (!order[person][id]) order[person][id] = { name: menuItems.find(m => m.id === id).name, qty: 0 };
             
             // Limiter la quantité entre 0 et 2
@@ -1844,10 +1918,11 @@
         }
 
         function renderMenuWithEditControls() {
+            pruneOutOfStockFromOrder();
             // Générer le menu pour Madame avec contrôles d'édition
             const gridMadame = document.getElementById('menu-grid-madame');
             gridMadame.innerHTML = menuItems.map(item => `
-                <div class="card cat-${item.cat}" data-item-id="${item.id}">
+                <div class="card cat-${item.cat} ${item.outOfStock ? 'out-of-stock' : ''}" data-item-id="${item.id}">
                     <div class="edit-controls">
                         <button class="edit-btn edit" onclick="editItem('${item.id}')" title="Modifier">✏️</button>
                         <button class="edit-btn delete" onclick="deleteItem('${item.id}')" title="Supprimer">🗑️</button>
@@ -1855,21 +1930,22 @@
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                        ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
                                 <div class="radio-group">
                                     ${item.options.map(option => `
                                         <label class="radio-container">
-                                            <input type="checkbox" name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${option}
+                                            <input type="checkbox" ${item.outOfStock ? 'disabled' : ''} name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${option}
                                         </label>
                                     `).join('')}
                                 </div>
                             ` : `
                                 <div class="quantity-controls">
-                                    <button class="btn-qty" onclick="changeQty('madame', '${item.id}', -1)">-</button>
+                                    <button class="btn-qty" ${item.outOfStock ? 'disabled' : ''} onclick="changeQty('madame', '${item.id}', -1)">-</button>
                                     <span id="qty-madame-${item.id}">0</span>
-                                    <button class="btn-qty" onclick="changeQty('madame', '${item.id}', 1)">+</button>
+                                    <button class="btn-qty" ${item.outOfStock ? 'disabled' : ''} onclick="changeQty('madame', '${item.id}', 1)">+</button>
                                 </div>
                             `}
                         </div>
@@ -1880,7 +1956,7 @@
             // Générer le menu pour Monsieur avec contrôles d'édition
             const gridMonsieur = document.getElementById('menu-grid-monsieur');
             gridMonsieur.innerHTML = menuItems.map(item => `
-                <div class="card cat-${item.cat}" data-item-id="${item.id}">
+                <div class="card cat-${item.cat} ${item.outOfStock ? 'out-of-stock' : ''}" data-item-id="${item.id}">
                     <div class="edit-controls">
                         <button class="edit-btn edit" onclick="editItem('${item.id}')" title="Modifier">✏️</button>
                         <button class="edit-btn delete" onclick="deleteItem('${item.id}')" title="Supprimer">🗑️</button>
@@ -1888,21 +1964,22 @@
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                        ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
                                 <div class="radio-group">
                                     ${item.options.map(option => `
                                         <label class="radio-container">
-                                            <input type="checkbox" name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${option}
+                                            <input type="checkbox" ${item.outOfStock ? 'disabled' : ''} name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${option}
                                         </label>
                                     `).join('')}
                                 </div>
                             ` : `
                                 <div class="quantity-controls">
-                                    <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', -1)">-</button>
+                                    <button class="btn-qty" ${item.outOfStock ? 'disabled' : ''} onclick="changeQty('monsieur', '${item.id}', -1)">-</button>
                                     <span id="qty-monsieur-${item.id}">0</span>
-                                    <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', 1)">+</button>
+                                    <button class="btn-qty" ${item.outOfStock ? 'disabled' : ''} onclick="changeQty('monsieur', '${item.id}', 1)">+</button>
                                 </div>
                             `}
                         </div>
@@ -1932,6 +2009,7 @@
             document.getElementById('edit-item-title').textContent = 'Modifier un article';
             document.getElementById('item-name').value = item.name;
             document.getElementById('item-category').value = item.cat;
+            document.getElementById('item-outofstock').checked = !!item.outOfStock;
             
             if (item.type === 'radio') {
                 document.getElementById('item-type').value = 'radio';
@@ -1953,6 +2031,7 @@
             document.getElementById('item-category').value = 'viennoiserie';
             document.getElementById('item-type').value = 'quantity';
             document.getElementById('item-options').value = '';
+            document.getElementById('item-outofstock').checked = false;
             document.getElementById('options-group').style.display = 'none';
             document.getElementById('edit-item-modal').style.display = 'flex';
         }
@@ -1984,6 +2063,7 @@
             const category = document.getElementById('item-category').value;
             const type = document.getElementById('item-type').value;
             const optionsText = document.getElementById('item-options').value.trim();
+            const outOfStock = !!document.getElementById('item-outofstock').checked;
             
             if (!name) {
                 alert('Veuillez entrer un nom pour l\'article.');
@@ -2005,6 +2085,7 @@
                     item.cat = category;
                     item.type = type;
                     item.options = options;
+                    item.outOfStock = outOfStock;
                     
                     // Supprimer l'ancien type s'il a changé
                     if (type === 'quantity') {
@@ -2019,6 +2100,8 @@
                     cat: category,
                     type: type // ✅ AJOUT CRUCIAL
                 };
+
+                newItem.outOfStock = outOfStock;
                 
                 if (type === 'radio') {
                     newItem.type = 'radio';
