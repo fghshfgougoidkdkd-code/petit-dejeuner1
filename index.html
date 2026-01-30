@@ -916,7 +916,6 @@
     <button id="edit-mode-toggle" class="edit-mode-toggle" onclick="exitEditMode()">Quitter le mode édition</button>
 
     <script>
-        const DATA_URL = "https://script.google.com/macros/s/AKfycbzz2s71wrCpHO_v4INQW0Qwo8WmiMOD3jpkqMb424KOBqzjODzxyYZBX8QR8eizFn-7ug/exec";
         
         let menuItems = [];
 
@@ -925,8 +924,31 @@
             monsieur: {}
         };
 
-        let lastSync = 0;
-        let syncInterval = null;
+        const STORAGE_KEY = 'pd_order_session';
+
+        function loadOrder() {
+            try {
+                const raw = sessionStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (data && typeof data === 'object' && data.madame && data.monsieur) {
+                    order = {
+                        madame: data.madame || {},
+                        monsieur: data.monsieur || {}
+                    };
+                }
+            } catch (e) {
+                console.warn('Impossible de charger le panier de la session:', e);
+            }
+        }
+
+        function saveOrder() {
+            try {
+                sessionStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+            } catch (e) {
+                console.warn('Impossible d\'enregistrer le panier de la session:', e);
+            }
+        }
 
         // Variables pour le mode édition
         let isEditMode = false;
@@ -938,6 +960,7 @@
         // ===== INITIALISATION =====
 
         function initMenu() {
+            loadOrder();
             renderMenu();
             renderSummary();
         }
@@ -1096,8 +1119,8 @@
                 // Si on décoche, supprimer la sélection
                 delete order[person][id];
             }
+            saveOrder();
             renderSummary();
-            saveSharedOrder();
         }
 
         function changeQty(person, id, delta) {
@@ -1109,8 +1132,8 @@
             document.getElementById(`qty-${person}-${id}`).innerText = order[person][id].qty;
             
             if (order[person][id].qty === 0) delete order[person][id];
+            saveOrder();
             renderSummary();
-            saveSharedOrder();
         }
 
         function renderSummary() {
@@ -1612,7 +1635,7 @@
         }
 
         window.onload = function() {
-            loadSharedOrder();
+            initMenu();
             setupEditModeDetection();
         };
 
@@ -1663,7 +1686,6 @@
 
         function enableEditMode() {
             isEditMode = true;
-            stopSync(); // ⛔ STOP synchro
             document.body.classList.add('edit-mode');
             document.getElementById('edit-mode-toggle').style.display = 'block';
             renderMenu();
@@ -1673,9 +1695,7 @@
             isEditMode = false;
             document.body.classList.remove('edit-mode');
             document.getElementById('edit-mode-toggle').style.display = 'none';
-            saveSharedOrder(); // ✅ pousser l'état final
-            loadSharedOrder(); // 🔄 recharger proprement
-            startSync();       // 🔁 reprendre la synchro
+            initMenu();
         }
 
         function renderMenuWithEditControls() {
@@ -1801,8 +1821,8 @@
                     delete order.madame[itemId];
                     delete order.monsieur[itemId];
                     renderMenuWithEditControls();
+                    saveOrder();
                     renderSummary();
-                    saveSharedOrder();
                 }
             }
         }
@@ -1865,7 +1885,6 @@
             closeEditModal();
             renderMenuWithEditControls();
             renderSummary();
-            saveSharedOrder();
         }
 
         function closeEditModal() {
@@ -1885,60 +1904,6 @@
             }
         });
 
-        // ===== FONCTIONS DE SYNCHRONISATION PARTAGÉE =====
-
-        async function saveSharedOrder() {
-            try {
-                await fetch(DATA_URL, {
-                    method: "POST",
-                    mode: "no-cors", // ✅ CONTOURNEMENT CORS
-                    body: JSON.stringify({
-                        order,
-                        menuItems,
-                        ts: Date.now()
-                    })
-                });
-            } catch (e) {
-                console.warn("Sauvegarde partagée échouée", e);
-            }
-        }
-
-        async function loadSharedOrder() {
-            if (isEditMode) return;
-
-            try {
-                const res = await fetch(DATA_URL);
-                const data = await res.json();
-
-                if (!data.ts) {
-                    initMenu();
-                    startSync(); // ✅ ICI
-                    return;
-                }
-
-                if (data.ts <= lastSync) return;
-                lastSync = data.ts;
-
-                if (data.menuItems) menuItems.splice(0, menuItems.length, ...data.menuItems);
-                if (data.order) order = data.order;
-
-                initMenu();
-                startSync(); // ✅ ICI
-            } catch (e) {
-                console.warn("Lecture partagée échouée", e);
-            }
-        }
-
-        function startSync() {
-            if (!syncInterval) {
-                syncInterval = setInterval(loadSharedOrder, 3000);
-            }
-        }
-
-        function stopSync() {
-            clearInterval(syncInterval);
-            syncInterval = null;
-        }
     </script>
 </body>
 </html>
