@@ -1,1987 +1,1987 @@
-    <!DOCTYPE html>
-    <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Petit-Déjeuner - Neobrutalism</title>
-        <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-        <style>
-            :root {
-                --pink-light: #FCE4EC;
-                --pink-medium: #F8BBD0;
-                --pink-dark: #E91E63;
-                --text-color: #880E4F;
-                --white: #FFFFFF;
-                --font-cursive: 'Dancing Script', cursive;
-                --font-body: 'Open Sans', sans-serif;
-                --border-radius-soft: 15px;
-                --shadow-soft: 0 4px 8px rgba(0, 0, 0, 0.1);
-            }
-
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-                font-family: var(--font-body);
-            }
-
-            body {
-                background-color: var(--pink-light);
-                background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 50%, #FCE4EC 100%);
-                padding: 10px;
-                color: var(--text-color);
-                min-height: 100vh;
-            }
-
-            .container {
-                max-width: 800px;
-                margin: 0 auto;
-            }
-
-            /* Header Romantique */
-            header {
-                background: var(--white);
-                border: 2px solid var(--pink-medium);
-                border-radius: var(--border-radius-soft);
-                box-shadow: var(--shadow-soft);
-                padding: 20px;
-                margin-bottom: 20px;
-                text-align: center;
-                position: relative;
-            }
-
-            header::before,
-            header::after {
-                content: "❦";
-                position: absolute;
-                font-size: 2rem;
-                color: var(--pink-dark);
-                opacity: 0.6;
-            }
-
-            header::before {
-                top: 10px;
-                left: 20px;
-            }
-
-            header::after {
-                bottom: 10px;
-                right: 20px;
-            }
-
-            header h1 {
-                font-family: var(--font-cursive);
-                font-size: 2rem;
-                font-weight: 700;
-                color: var(--text-color);
-                margin-bottom: 5px;
-            }
-
-            .subtitle {
-                font-family: var(--font-body);
-                font-weight: 400;
-                font-size: 0.9rem;
-                color: var(--text-color);
-                opacity: 0.8;
-            }
-
-            /* Tabs Navigation Romantique */
-            .tabs-nav {
-                display: flex;
-                gap: 10px;
-                margin-bottom: 15px;
-                background: var(--white);
-                padding: 8px;
-                border-radius: var(--border-radius-soft);
-                box-shadow: var(--shadow-soft);
-            }
-
-            .tab-button {
-                flex: 1;
-                padding: 10px 15px;
-                background: var(--pink-light);
-                border: 2px solid var(--pink-medium);
-                border-radius: var(--border-radius-soft);
-                font-family: var(--font-cursive);
-                font-size: 1rem;
-                font-weight: 700;
-                color: var(--text-color);
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-
-            .tab-button.active {
-                background: var(--pink-dark);
-                color: var(--white);
-                transform: scale(1.05);
-                box-shadow: 0 6px 12px rgba(233, 30, 99, 0.3);
-            }
-
-            .tab-button:hover:not(.active) {
-                background: var(--pink-medium);
-                transform: translateY(-2px);
-            }
-
-            /* Tab Content */
-            .tab-content {
-                display: none;
-            }
-
-            .tab-content.active {
-                display: block;
-            }
-
-            /* Layout Grid */
-            main {
-                display: grid;
-                grid-template-columns: 1fr 280px;
-                gap: 20px;
-            }
-
-            @media (max-width: 768px) {
-                main { grid-template-columns: 1fr; }
-            }
-
-            /* Menu Section & Cards Romantiques */
-            .menu-section h2 {
-                font-family: var(--font-cursive);
-                font-weight: 700;
-                font-size: 1.5rem;
-                margin-bottom: 15px;
-                color: var(--text-color);
-                text-align: center;
-                position: relative;
-            }
-
-            .menu-section h2::before,
-            .menu-section h2::after {
-                content: "❦";
-                position: absolute;
-                font-size: 1.5rem;
-                color: var(--pink-dark);
-                opacity: 0.6;
-            }
-
-            .menu-section h2::before {
-                top: -10px;
-                left: -40px;
-            }
-
-            .menu-section h2::after {
-                top: -10px;
-                right: -40px;
-            }
-
-            .menu-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-                gap: 15px;
-                margin-bottom: 20px;
-            }
-
-            .card {
-                background: var(--white);
-                border: 2px solid var(--pink-medium);
-                border-radius: var(--border-radius-soft);
-                box-shadow: var(--shadow-soft);
-                overflow: hidden;
-                transition: all 0.3s ease;
-                display: flex;
-                flex-direction: column;
-                position: relative;
-            }
-
-            .card::before {
-                content: "♡";
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                font-size: 1.2rem;
-                color: var(--pink-medium);
-                opacity: 0.6;
-            }
-
-            .card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-                border-color: var(--pink-dark);
-            }
-
-            .head {
-                font-size: 12px;
-                font-weight: 600;
-                background: var(--pink-light);
-                padding: 8px 12px;
-                border-bottom: 2px solid var(--pink-medium);
-                text-transform: uppercase;
-                color: var(--text-color);
-                font-family: var(--font-body);
-            }
-
-            .content {
-                padding: 15px;
-                font-size: 14px;
-                font-weight: 600;
-                flex-grow: 1;
-                color: var(--text-color);
-            }
-
-            /* Controls inside cards Romantiques */
-            .item-controls {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-top: 10px;
-                background: var(--pink-light);
-                padding: 8px;
-                border-radius: var(--border-radius-soft);
-                border: 1px solid var(--pink-medium);
-            }
-
-            .radio-group {
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
-            }
-
-            .radio-container {
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                cursor: pointer;
-                font-size: 10px;
-                padding: 3px 8px;
-                background: var(--white);
-                border-radius: 20px;
-                border: 1px solid var(--pink-medium);
-                transition: all 0.3s ease;
-            }
-
-            .radio-container:hover {
-                background: var(--pink-medium);
-                transform: scale(1.05);
-            }
-
-            input[type="checkbox"] {
-                appearance: none;
-                width: 18px;
-                height: 18px;
-                border: 2px solid var(--pink-medium);
-                background: var(--white);
-                border-radius: 50%;
-                cursor: pointer;
-                position: relative;
-            }
-
-            input[type="checkbox"]:checked {
-                background: var(--pink-dark);
-                border-color: var(--pink-dark);
-            }
-
-            input[type="checkbox"]:checked::after {
-                content: "♥";
-                position: absolute;
-                left: 2px;
-                top: -2px;
-                font-size: 12px;
-                color: var(--white);
-            }
-
-            .quantity-controls {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-            .btn-qty {
-                width: 28px;
-                height: 28px;
-                border: 2px solid var(--pink-medium);
-                background: var(--white);
-                border-radius: 50%;
-                font-weight: 600;
-                cursor: pointer;
-                color: var(--text-color);
-                transition: all 0.3s ease;
-                font-size: 14px;
-            }
-
-            .btn-qty:hover {
-                background: var(--pink-medium);
-                transform: scale(1.1);
-            }
-
-            .btn-qty:active {
-                transform: scale(0.95);
-            }
-
-            /* Order Summary Romantique */
-            .order-summary {
-                position: sticky;
-                top: 10px;
-            }
-
-            .summary-card {
-                background: var(--white);
-                border: 2px solid var(--pink-medium);
-                border-radius: var(--border-radius-soft);
-                box-shadow: var(--shadow-soft);
-                position: relative;
-            }
-
-            .summary-card::before {
-                content: "❦";
-                position: absolute;
-                top: 10px;
-                left: 15px;
-                font-size: 1.5rem;
-                color: var(--pink-dark);
-                opacity: 0.6;
-            }
-
-            .summary-list {
-                list-style: none;
-                max-height: 300px;
-                overflow-y: auto;
-                margin-bottom: 15px;
-                padding: 8px;
-            }
-
-            .summary-item {
-                background: var(--pink-light);
-                border: 1px solid var(--pink-medium);
-                border-radius: var(--border-radius-soft);
-                padding: 10px;
-                margin-bottom: 8px;
-                display: flex;
-                justify-content: space-between;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-                opacity: 0;
-                transform: translateX(-20px);
-                animation: slideInFade 0.5s ease forwards;
-            }
-
-            @keyframes slideInFade {
-                to {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
-            }
-
-            .summary-item:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            }
-
-            .summary-total {
-                font-size: 1rem;
-                font-weight: 700;
-                font-family: var(--font-cursive);
-                color: var(--text-color);
-                border-top: 2px solid var(--pink-medium);
-                padding-top: 10px;
-                margin-bottom: 15px;
-                text-align: center;
-            }
-
-            .button-send {
-                width: 100%;
-                padding: 12px;
-                background: linear-gradient(135deg, var(--pink-dark), var(--pink-medium));
-                border: 2px solid var(--pink-dark);
-                border-radius: var(--border-radius-soft);
-                font-family: var(--font-cursive);
-                font-weight: 700;
-                font-size: 1.1rem;
-                color: var(--white);
-                cursor: pointer;
-                transition: all 0.3s ease;
-                position: relative;
-                overflow: hidden;
-            }
-
-            .button-send::before {
-                content: "♥";
-                position: absolute;
-                left: 20px;
-                top: 50%;
-                transform: translateY(-50%);
-                font-size: 1.2rem;
-            }
-
-            .button-send:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 16px rgba(233, 30, 99, 0.3);
-            }
-
-            .button-send:active {
-                transform: translateY(-1px);
-            }
-
-            /* Modal Romantique */
-            .modal {
-                display: none;
-                position: fixed;
-                top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(248, 187, 208, 0.9);
-                z-index: 1000;
-                justify-content: center;
-                align-items: center;
-            }
-
-            /* Loading Animation */
-            .loading-wrapper {
-                width: 200px;
-                height: 60px;
-                position: relative;
-                z-index: 1;
-            }
-
-            .loading-circle {
-                width: 20px;
-                height: 20px;
-                position: absolute;
-                border-radius: 50%;
-                background-color: #fff;
-                left: 15%;
-                transform-origin: 50%;
-                animation: circle7124 .5s alternate infinite ease;
-            }
-
-            @keyframes circle7124 {
-                0% {
-                    top: 60px;
-                    height: 5px;
-                    border-radius: 50px 50px 25px 25px;
-                    transform: scaleX(1.7);
-                }
-
-                40% {
-                    height: 20px;
-                    border-radius: 50%;
-                    transform: scaleX(1);
-                }
-
-                100% {
-                    top: 0%;
-                }
-            }
-
-            .loading-circle:nth-child(2) {
-                left: 45%;
-                animation-delay: .2s;
-            }
-
-            .loading-circle:nth-child(3) {
-                left: auto;
-                right: 15%;
-                animation-delay: .3s;
-            }
-
-            .loading-shadow {
-                width: 20px;
-                height: 4px;
-                border-radius: 50%;
-                background-color: rgba(233, 30, 99, 0.5);
-                position: absolute;
-                top: 62px;
-                transform-origin: 50%;
-                z-index: -1;
-                left: 15%;
-                filter: blur(1px);
-                animation: shadow046 .5s alternate infinite ease;
-            }
-
-            @keyframes shadow046 {
-                0% {
-                    transform: scaleX(1.5);
-                }
-
-                40% {
-                    transform: scaleX(1);
-                    opacity: .7;
-                }
-
-                100% {
-                    transform: scaleX(.2);
-                    opacity: .4;
-                }
-            }
-
-            .loading-shadow:nth-child(4) {
-                left: 45%;
-                animation-delay: .2s
-            }
-
-            .loading-shadow:nth-child(5) {
-                left: auto;
-                right: 15%;
-                animation-delay: .3s;
-            }
-
-            .loading-text {
-                font-family: var(--font-cursive);
-                font-size: 1.5rem;
-                color: var(--text-color);
-                margin-top: 80px;
-                text-align: center;
-            }
-
-            .modal-content {
-                background: var(--white);
-                border: 3px solid var(--pink-dark);
-                border-radius: var(--border-radius-soft);
-                box-shadow: 0 15px 30px rgba(233, 30, 99, 0.3);
-                padding: 50px;
-                max-width: 500px;
-                text-align: center;
-                position: relative;
-                opacity: 0;
-                transform: scale(0.8);
-                transition: all 0.5s ease;
-            }
-
-            .modal.show .modal-content {
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petit-Déjeuner - Neobrutalism</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink-light: #FCE4EC;
+            --pink-medium: #F8BBD0;
+            --pink-dark: #E91E63;
+            --text-color: #880E4F;
+            --white: #FFFFFF;
+            --font-cursive: 'Dancing Script', cursive;
+            --font-body: 'Open Sans', sans-serif;
+            --border-radius-soft: 15px;
+            --shadow-soft: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-body);
+        }
+
+        body {
+            background-color: var(--pink-light);
+            background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 50%, #FCE4EC 100%);
+            padding: 10px;
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Header Romantique */
+        header {
+            background: var(--white);
+            border: 2px solid var(--pink-medium);
+            border-radius: var(--border-radius-soft);
+            box-shadow: var(--shadow-soft);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        header::before,
+        header::after {
+            content: "❦";
+            position: absolute;
+            font-size: 2rem;
+            color: var(--pink-dark);
+            opacity: 0.6;
+        }
+
+        header::before {
+            top: 10px;
+            left: 20px;
+        }
+
+        header::after {
+            bottom: 10px;
+            right: 20px;
+        }
+
+        header h1 {
+            font-family: var(--font-cursive);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-family: var(--font-body);
+            font-weight: 400;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        /* Tabs Navigation Romantique */
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: var(--white);
+            padding: 8px;
+            border-radius: var(--border-radius-soft);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 10px 15px;
+            background: var(--pink-light);
+            border: 2px solid var(--pink-medium);
+            border-radius: var(--border-radius-soft);
+            font-family: var(--font-cursive);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: var(--pink-dark);
+            color: var(--white);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(233, 30, 99, 0.3);
+        }
+
+        .tab-button:hover:not(.active) {
+            background: var(--pink-medium);
+            transform: translateY(-2px);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Layout Grid */
+        main {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            main { grid-template-columns: 1fr; }
+        }
+
+        /* Menu Section & Cards Romantiques */
+        .menu-section h2 {
+            font-family: var(--font-cursive);
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            text-align: center;
+            position: relative;
+        }
+
+        .menu-section h2::before,
+        .menu-section h2::after {
+            content: "❦";
+            position: absolute;
+            font-size: 1.5rem;
+            color: var(--pink-dark);
+            opacity: 0.6;
+        }
+
+        .menu-section h2::before {
+            top: -10px;
+            left: -40px;
+        }
+
+        .menu-section h2::after {
+            top: -10px;
+            right: -40px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--white);
+            border: 2px solid var(--pink-medium);
+            border-radius: var(--border-radius-soft);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card::before {
+            content: "♡";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2rem;
+            color: var(--pink-medium);
+            opacity: 0.6;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-color: var(--pink-dark);
+        }
+
+        .head {
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--pink-light);
+            padding: 8px 12px;
+            border-bottom: 2px solid var(--pink-medium);
+            text-transform: uppercase;
+            color: var(--text-color);
+            font-family: var(--font-body);
+        }
+
+        .content {
+            padding: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            flex-grow: 1;
+            color: var(--text-color);
+        }
+
+        /* Controls inside cards Romantiques */
+        .item-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            background: var(--pink-light);
+            padding: 8px;
+            border-radius: var(--border-radius-soft);
+            border: 1px solid var(--pink-medium);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .radio-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-size: 10px;
+            padding: 3px 8px;
+            background: var(--white);
+            border-radius: 20px;
+            border: 1px solid var(--pink-medium);
+            transition: all 0.3s ease;
+        }
+
+        .radio-container:hover {
+            background: var(--pink-medium);
+            transform: scale(1.05);
+        }
+
+        input[type="checkbox"] {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--pink-medium);
+            background: var(--white);
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+        }
+
+        input[type="checkbox"]:checked {
+            background: var(--pink-dark);
+            border-color: var(--pink-dark);
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: "♥";
+            position: absolute;
+            left: 2px;
+            top: -2px;
+            font-size: 12px;
+            color: var(--white);
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-qty {
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--pink-medium);
+            background: var(--white);
+            border-radius: 50%;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-qty:hover {
+            background: var(--pink-medium);
+            transform: scale(1.1);
+        }
+
+        .btn-qty:active {
+            transform: scale(0.95);
+        }
+
+        /* Order Summary Romantique */
+        .order-summary {
+            position: sticky;
+            top: 10px;
+        }
+
+        .summary-card {
+            background: var(--white);
+            border: 2px solid var(--pink-medium);
+            border-radius: var(--border-radius-soft);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+        }
+
+        .summary-card::before {
+            content: "❦";
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 1.5rem;
+            color: var(--pink-dark);
+            opacity: 0.6;
+        }
+
+        .summary-list {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 8px;
+        }
+
+        .summary-item {
+            background: var(--pink-light);
+            border: 1px solid var(--pink-medium);
+            border-radius: var(--border-radius-soft);
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideInFade 0.5s ease forwards;
+        }
+
+        @keyframes slideInFade {
+            to {
                 opacity: 1;
-                transform: scale(1);
+                transform: translateX(0);
+            }
+        }
+
+        .summary-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .summary-total {
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: var(--font-cursive);
+            color: var(--text-color);
+            border-top: 2px solid var(--pink-medium);
+            padding-top: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .button-send {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--pink-dark), var(--pink-medium));
+            border: 2px solid var(--pink-dark);
+            border-radius: var(--border-radius-soft);
+            font-family: var(--font-cursive);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-send::before {
+            content: "♥";
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+        }
+
+        .button-send:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(233, 30, 99, 0.3);
+        }
+
+        .button-send:active {
+            transform: translateY(-1px);
+        }
+
+        /* Modal Romantique */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(248, 187, 208, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Loading Animation */
+        .loading-wrapper {
+            width: 200px;
+            height: 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .loading-circle {
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            border-radius: 50%;
+            background-color: #fff;
+            left: 15%;
+            transform-origin: 50%;
+            animation: circle7124 .5s alternate infinite ease;
+        }
+
+        @keyframes circle7124 {
+            0% {
+                top: 60px;
+                height: 5px;
+                border-radius: 50px 50px 25px 25px;
+                transform: scaleX(1.7);
             }
 
-            .modal-content::before,
-            .modal-content::after {
-                content: "❦";
-                position: absolute;
-                font-size: 2rem;
-                color: var(--pink-dark);
-                opacity: 0.6;
-            }
-
-            .modal-content::before {
-                top: 15px;
-                left: 20px;
-            }
-
-            .modal-content::after {
-                bottom: 15px;
-                right: 20px;
-            }
-
-            .modal-content h2 {
-                font-family: var(--font-cursive);
-                font-size: 2.5rem;
-                font-weight: 700;
-                margin-bottom: 20px;
-                color: var(--text-color);
-            }
-
-            .modal-content p {
-                font-family: var(--font-body);
-                font-size: 1.1rem;
-                color: var(--text-color);
-                opacity: 0.8;
-                margin-bottom: 30px;
-            }
-
-            /* Specific colors for categories */
-            .cat-viennoiserie { background: linear-gradient(135deg, var(--white), #FFE0EC); }
-            .cat-plat { background: linear-gradient(135deg, var(--white), #E8F5E8); }
-            .cat-boisson { background: linear-gradient(135deg, var(--white), #E0F2F1); }
-            .cat-accompagnement { background: linear-gradient(135deg, var(--white), #FFF3E0); }
-
-            /* Mode édition styles */
-            .edit-mode .card {
-                border: 3px solid #ff4444;
-                box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
-                position: relative;
-            }
-
-            .edit-controls {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                display: flex;
-                gap: 5px;
-                z-index: 10;
-            }
-
-            .edit-btn {
-                width: 30px;
-                height: 30px;
-                border: none;
+            40% {
+                height: 20px;
                 border-radius: 50%;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: bold;
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                transform: scaleX(1);
             }
 
-            .edit-btn.edit {
-                background: #4CAF50;
-                color: white;
+            100% {
+                top: 0%;
+            }
+        }
+
+        .loading-circle:nth-child(2) {
+            left: 45%;
+            animation-delay: .2s;
+        }
+
+        .loading-circle:nth-child(3) {
+            left: auto;
+            right: 15%;
+            animation-delay: .3s;
+        }
+
+        .loading-shadow {
+            width: 20px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: rgba(233, 30, 99, 0.5);
+            position: absolute;
+            top: 62px;
+            transform-origin: 50%;
+            z-index: -1;
+            left: 15%;
+            filter: blur(1px);
+            animation: shadow046 .5s alternate infinite ease;
+        }
+
+        @keyframes shadow046 {
+            0% {
+                transform: scaleX(1.5);
             }
 
-            .edit-btn.delete {
-                background: #f44336;
-                color: white;
+            40% {
+                transform: scaleX(1);
+                opacity: .7;
             }
 
-            .edit-btn:hover {
-                transform: scale(1.1);
+            100% {
+                transform: scaleX(.2);
+                opacity: .4;
             }
+        }
 
-            .edit-mode-toggle {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #ff4444;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 25px;
-                font-weight: bold;
-                cursor: pointer;
-                z-index: 1001;
-                display: none;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            }
+        .loading-shadow:nth-child(4) {
+            left: 45%;
+            animation-delay: .2s
+        }
 
-            .edit-mode-toggle:hover {
-                background: #cc0000;
-                transform: translateY(-2px);
-            }
+        .loading-shadow:nth-child(5) {
+            left: auto;
+            right: 15%;
+            animation-delay: .3s;
+        }
 
-            /* Modal mot de passe */
-            .password-modal {
-                display: none;
-                position: fixed;
-                top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0, 0, 0, 0.8);
-                z-index: 2000;
-                justify-content: center;
-                align-items: center;
-            }
+        .loading-text {
+            font-family: var(--font-cursive);
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin-top: 80px;
+            text-align: center;
+        }
 
-            .password-modal-content {
-                background: var(--white);
-                border: 3px solid var(--pink-dark);
-                border-radius: var(--border-radius-soft);
-                padding: 30px;
-                max-width: 400px;
-                text-align: center;
-            }
+        .modal-content {
+            background: var(--white);
+            border: 3px solid var(--pink-dark);
+            border-radius: var(--border-radius-soft);
+            box-shadow: 0 15px 30px rgba(233, 30, 99, 0.3);
+            padding: 50px;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s ease;
+        }
 
-            .password-modal h3 {
-                font-family: var(--font-cursive);
-                font-size: 1.8rem;
-                color: var(--text-color);
-                margin-bottom: 20px;
-            }
+        .modal.show .modal-content {
+            opacity: 1;
+            transform: scale(1);
+        }
 
-            .password-input {
-                width: 100%;
-                padding: 12px;
-                border: 2px solid var(--pink-medium);
-                border-radius: var(--border-radius-soft);
-                font-size: 16px;
-                margin-bottom: 20px;
-                font-family: var(--font-body);
-            }
+        .modal-content::before,
+        .modal-content::after {
+            content: "❦";
+            position: absolute;
+            font-size: 2rem;
+            color: var(--pink-dark);
+            opacity: 0.6;
+        }
 
-            .password-buttons {
-                display: flex;
-                gap: 10px;
-                justify-content: center;
-            }
+        .modal-content::before {
+            top: 15px;
+            left: 20px;
+        }
 
-            .password-btn {
-                padding: 10px 20px;
-                border: none;
-                border-radius: var(--border-radius-soft);
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
+        .modal-content::after {
+            bottom: 15px;
+            right: 20px;
+        }
 
-            .password-btn.confirm {
-                background: var(--pink-dark);
-                color: white;
-            }
+        .modal-content h2 {
+            font-family: var(--font-cursive);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
 
-            .password-btn.cancel {
-                background: var(--pink-light);
-                color: var(--text-color);
-                border: 2px solid var(--pink-medium);
-            }
+        .modal-content p {
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            color: var(--text-color);
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
 
-            .password-btn:hover {
-                transform: translateY(-2px);
-            }
+        /* Specific colors for categories */
+        .cat-viennoiserie { background: linear-gradient(135deg, var(--white), #FFE0EC); }
+        .cat-plat { background: linear-gradient(135deg, var(--white), #E8F5E8); }
+        .cat-boisson { background: linear-gradient(135deg, var(--white), #E0F2F1); }
+        .cat-accompagnement { background: linear-gradient(135deg, var(--white), #FFF3E0); }
 
-            /* Modal d'édition d'article */
-            .edit-item-modal {
-                display: none;
-                position: fixed;
-                top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0, 0, 0, 0.8);
-                z-index: 2001;
-                justify-content: center;
-                align-items: center;
-            }
+        /* Mode édition styles */
+        .edit-mode .card {
+            border: 3px solid #ff4444;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+            position: relative;
+        }
 
-            .edit-item-modal-content {
-                background: var(--white);
-                border: 3px solid var(--pink-dark);
-                border-radius: var(--border-radius-soft);
-                padding: 30px;
-                max-width: 500px;
-                width: 90%;
-                max-height: 80vh;
-                overflow-y: auto;
-            }
+        .edit-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            z-index: 10;
+        }
 
-            .edit-item-modal h3 {
-                font-family: var(--font-cursive);
-                font-size: 1.8rem;
-                color: var(--text-color);
-                margin-bottom: 20px;
-            }
+        .edit-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-            .form-group {
-                margin-bottom: 15px;
-            }
+        .edit-btn.edit {
+            background: #4CAF50;
+            color: white;
+        }
 
-            .form-group label {
-                display: block;
-                margin-bottom: 5px;
-                font-weight: 600;
-                color: var(--text-color);
-            }
+        .edit-btn.delete {
+            background: #f44336;
+            color: white;
+        }
 
-            .form-group input, .form-group select {
-                width: 100%;
-                padding: 10px;
-                border: 2px solid var(--pink-medium);
-                border-radius: var(--border-radius-soft);
-                font-size: 14px;
-                font-family: var(--font-body);
-            }
+        .edit-btn:hover {
+            transform: scale(1.1);
+        }
 
-            .form-group textarea {
-                width: 100%;
-                padding: 10px;
-                border: 2px solid var(--pink-medium);
-                border-radius: var(--border-radius-soft);
-                font-size: 14px;
-                font-family: var(--font-body);
-                min-height: 80px;
-                resize: vertical;
-            }
+        .edit-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-            .edit-item-buttons {
-                display: flex;
-                gap: 10px;
-                justify-content: center;
-                margin-top: 20px;
-            }
-        </style>
-    </head>
-    <body>
+        .edit-mode-toggle:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+        }
 
-        <div class="container">
-            <header>
-                <h1>Choix du Petit Déjeuner</h1>
-                <p class="subtitle">Veuillez choisir votre petit déjeuner.</p>
-            </header>
+        /* Modal mot de passe */
+        .password-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
 
-            <main>
-                <section class="menu-section">
-                    <!-- Navigation des onglets -->
-                    <div class="tabs-nav">
-                        <button class="tab-button active" onclick="switchTab('madame')">Madame</button>
-                        <button class="tab-button" onclick="switchTab('monsieur')">Monsieur</button>
-                    </div>
+        .password-modal-content {
+            background: var(--white);
+            border: 3px solid var(--pink-dark);
+            border-radius: var(--border-radius-soft);
+            padding: 30px;
+            max-width: 400px;
+            text-align: center;
+        }
 
-                    <!-- Contenu des onglets -->
-                    <div id="tab-madame" class="tab-content active">
-                        <h2>Sélection de Petit Déjeuner</h2>
-                        <div id="menu-grid-madame" class="menu-grid">
-                            <!-- Généré par JS -->
-                        </div>
-                    </div>
+        .password-modal h3 {
+            font-family: var(--font-cursive);
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
 
-                    <div id="tab-monsieur" class="tab-content">
-                        <h2>Sélection de Petit Déjeuner</h2>
-                        <div id="menu-grid-monsieur" class="menu-grid">
-                            <!-- Généré par JS -->
-                        </div>
-                    </div>
-                </section>
+        .password-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--pink-medium);
+            border-radius: var(--border-radius-soft);
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-family: var(--font-body);
+        }
 
-                <aside class="order-summary">
-                    <div class="card summary-card">
-                        <div class="head">Résumé de la Commande</div>
-                        <div class="content">
-                            <div id="summary-items" class="summary-list">
-                                <p style="opacity: 0.6;">Votre sélection est vide...</p>
-                            </div>
-                            <div class="summary-total">
-                                Articles : <span id="total-count">0</span>
-                            </div>
-                            <button class="button-send" onclick="confirmOrder()">Envoyer</button>
-                        </div>
-                    </div>
-                </aside>
-            </main>
-        </div>
+        .password-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
 
-        <!-- Modal de confirmation -->
-        <div id="confirmation-modal" class="modal">
-            <div class="modal-content">
-                <h2>Merci beaucoup !</h2>
-                <p>Votre sélection a été enregistrée avec succès.</p>
-                <br>
-                <button class="button-send" onclick="closeModal()">Parfait</button>
-            </div>
-        </div>
+        .password-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius-soft);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-        <!-- Modal de chargement -->
-        <div id="loading-modal" class="modal">
-            <div>
-                <div class="loading-wrapper">
-                    <div class="loading-circle"></div>
-                    <div class="loading-circle"></div>
-                    <div class="loading-circle"></div>
-                    <div class="loading-shadow"></div>
-                    <div class="loading-shadow"></div>
-                    <div class="loading-shadow"></div>
+        .password-btn.confirm {
+            background: var(--pink-dark);
+            color: white;
+        }
+
+        .password-btn.cancel {
+            background: var(--pink-light);
+            color: var(--text-color);
+            border: 2px solid var(--pink-medium);
+        }
+
+        .password-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Modal d'édition d'article */
+        .edit-item-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .edit-item-modal-content {
+            background: var(--white);
+            border: 3px solid var(--pink-dark);
+            border-radius: var(--border-radius-soft);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .edit-item-modal h3 {
+            font-family: var(--font-cursive);
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--pink-medium);
+            border-radius: var(--border-radius-soft);
+            font-size: 14px;
+            font-family: var(--font-body);
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--pink-medium);
+            border-radius: var(--border-radius-soft);
+            font-size: 14px;
+            font-family: var(--font-body);
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .edit-item-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Choix du Petit Déjeuner</h1>
+            <p class="subtitle">Veuillez choisir votre petit déjeuner.</p>
+        </header>
+
+        <main>
+            <section class="menu-section">
+                <!-- Navigation des onglets -->
+                <div class="tabs-nav">
+                    <button class="tab-button active" onclick="switchTab('madame')">Madame</button>
+                    <button class="tab-button" onclick="switchTab('monsieur')">Monsieur</button>
                 </div>
-                <div class="loading-text">Envoi en cours...</div>
-            </div>
-        </div>
 
-        <!-- Modal mot de passe -->
-        <div id="password-modal" class="password-modal">
-            <div class="password-modal-content">
-                <h3>🔐 Mode Édition</h3>
-                <p>Veuillez entrer le mot de passe pour accéder au mode édition :</p>
-                <input type="password" id="password-input" class="password-input" placeholder="Mot de passe">
-                <div class="password-buttons">
-                    <button class="password-btn confirm" onclick="checkPassword()">Valider</button>
-                    <button class="password-btn cancel" onclick="closePasswordModal()">Annuler</button>
+                <!-- Contenu des onglets -->
+                <div id="tab-madame" class="tab-content active">
+                    <h2>Sélection de Petit Déjeuner</h2>
+                    <div id="menu-grid-madame" class="menu-grid">
+                        <!-- Généré par JS -->
+                    </div>
                 </div>
+
+                <div id="tab-monsieur" class="tab-content">
+                    <h2>Sélection de Petit Déjeuner</h2>
+                    <div id="menu-grid-monsieur" class="menu-grid">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+            </section>
+
+            <aside class="order-summary">
+                <div class="card summary-card">
+                    <div class="head">Résumé de la Commande</div>
+                    <div class="content">
+                        <div id="summary-items" class="summary-list">
+                            <p style="opacity: 0.6;">Votre sélection est vide...</p>
+                        </div>
+                        <div class="summary-total">
+                            Articles : <span id="total-count">0</span>
+                        </div>
+                        <button class="button-send" onclick="confirmOrder()">Envoyer</button>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <h2>Merci beaucoup !</h2>
+            <p>Votre sélection a été enregistrée avec succès.</p>
+            <br>
+            <button class="button-send" onclick="closeModal()">Parfait</button>
+        </div>
+    </div>
+
+    <!-- Modal de chargement -->
+    <div id="loading-modal" class="modal">
+        <div>
+            <div class="loading-wrapper">
+                <div class="loading-circle"></div>
+                <div class="loading-circle"></div>
+                <div class="loading-circle"></div>
+                <div class="loading-shadow"></div>
+                <div class="loading-shadow"></div>
+                <div class="loading-shadow"></div>
+            </div>
+            <div class="loading-text">Envoi en cours...</div>
+        </div>
+    </div>
+
+    <!-- Modal mot de passe -->
+    <div id="password-modal" class="password-modal">
+        <div class="password-modal-content">
+            <h3>🔐 Mode Édition</h3>
+            <p>Veuillez entrer le mot de passe pour accéder au mode édition :</p>
+            <input type="password" id="password-input" class="password-input" placeholder="Mot de passe">
+            <div class="password-buttons">
+                <button class="password-btn confirm" onclick="checkPassword()">Valider</button>
+                <button class="password-btn cancel" onclick="closePasswordModal()">Annuler</button>
             </div>
         </div>
+    </div>
 
-        <!-- Modal d'édition d'article -->
-        <div id="edit-item-modal" class="edit-item-modal">
-            <div class="edit-item-modal-content">
-                <h3 id="edit-item-title">Éditer un article</h3>
-                <form id="edit-item-form">
-                    <div class="form-group">
-                        <label for="item-name">Nom de l'article :</label>
-                        <input type="text" id="item-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="item-category">Catégorie :</label>
-                        <select id="item-category">
-                            <option value="viennoiserie">Viennoiserie</option>
-                            <option value="plat">Plat</option>
-                            <option value="boisson">Boisson</option>
-                            <option value="accompagnement">Accompagnement</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="item-type">Type de sélection :</label>
-                        <select id="item-type" onchange="toggleOptionsField()">
-                            <option value="quantity">Quantité (0-2)</option>
-                            <option value="radio">Options uniques</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="options-group" style="display: none;">
-                        <label for="item-options">Options (une par ligne) :</label>
-                        <textarea id="item-options" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
-                    </div>
-                    <div class="edit-item-buttons">
-                        <button type="button" class="password-btn confirm" onclick="saveItem()">Enregistrer</button>
-                        <button type="button" class="password-btn cancel" onclick="closeEditModal()">Annuler</button>
-                    </div>
-                </form>
-            </div>
+    <!-- Modal d'édition d'article -->
+    <div id="edit-item-modal" class="edit-item-modal">
+        <div class="edit-item-modal-content">
+            <h3 id="edit-item-title">Éditer un article</h3>
+            <form id="edit-item-form">
+                <div class="form-group">
+                    <label for="item-name">Nom de l'article :</label>
+                    <input type="text" id="item-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-category">Catégorie :</label>
+                    <select id="item-category">
+                        <option value="viennoiserie">Viennoiserie</option>
+                        <option value="plat">Plat</option>
+                        <option value="boisson">Boisson</option>
+                        <option value="accompagnement">Accompagnement</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="item-type">Type de sélection :</label>
+                    <select id="item-type" onchange="toggleOptionsField()">
+                        <option value="quantity">Quantité (0-2)</option>
+                        <option value="radio">Options uniques</option>
+                    </select>
+                </div>
+                <div class="form-group" id="options-group" style="display: none;">
+                    <label for="item-options">Options (une par ligne) :</label>
+                    <textarea id="item-options" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
+                </div>
+                <div class="edit-item-buttons">
+                    <button type="button" class="password-btn confirm" onclick="saveItem()">Enregistrer</button>
+                    <button type="button" class="password-btn cancel" onclick="closeEditModal()">Annuler</button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <!-- Bouton quitter mode édition -->
-        <button id="edit-mode-toggle" class="edit-mode-toggle" onclick="exitEditMode()">Quitter le mode édition</button>
+    <!-- Bouton quitter mode édition -->
+    <button id="edit-mode-toggle" class="edit-mode-toggle" onclick="exitEditMode()">Quitter le mode édition</button>
 
-        <script>
-            
-            let menuItems = [];
+    <script>
+        
+        let menuItems = [];
 
-            let order = {
-                madame: {},
-                monsieur: {}
-            };
+        let order = {
+            madame: {},
+            monsieur: {}
+        };
 
-            let lastSync = 0;
-            let syncInterval = null;
-            let userId = null;
-            let STATE_URL = 'https://script.google.com/macros/s/AKfycbxWrtRewJqdI4SzjMbj5IKgQOhhU3EYG36Cc0U0pual1uprd5rpnDaX98AJ0O17V6VO/exec';
+        let lastSync = 0;
+        let syncInterval = null;
+        let userId = null;
+        let STATE_URL = 'https://script.google.com/macros/s/AKfycbylW8r0CStUFMv1T-JzqapU_9ltY5iEGkeuiiTmLcv-dg_UCGQY-fmsn8S_SFeakTMJ1Q/exec';
 
-            function ensureUserId() {
-                const k = 'pd_user_id';
-                let v = localStorage.getItem(k);
-                if (!v) {
-                    v = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
-                    localStorage.setItem(k, v);
-                }
-                userId = v;
+        function ensureUserId() {
+            const k = 'pd_user_id';
+            let v = localStorage.getItem(k);
+            if (!v) {
+                v = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+                localStorage.setItem(k, v);
             }
+            userId = v;
+        }
 
-            function cartKey() {
-                if (!userId) ensureUserId();
-                return 'pd_cart_' + userId;
-            }
+        function cartKey() {
+            if (!userId) ensureUserId();
+            return 'pd_cart_' + userId;
+        }
 
-            function saveCart() {
-                try { localStorage.setItem(cartKey(), JSON.stringify(order)); } catch (e) {}
-            }
+        function saveCart() {
+            try { localStorage.setItem(cartKey(), JSON.stringify(order)); } catch (e) {}
+        }
 
-            function loadCart() {
-                try {
-                    const raw = localStorage.getItem(cartKey());
-                    if (raw) {
-                        const parsed = JSON.parse(raw);
-                        if (parsed && parsed.madame && parsed.monsieur) {
-                            order = parsed;
-                        }
+        function loadCart() {
+            try {
+                const raw = localStorage.getItem(cartKey());
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && parsed.madame && parsed.monsieur) {
+                        order = parsed;
                     }
-                } catch (e) {}
-            }
+                }
+            } catch (e) {}
+        }
 
-            function jsonp(url, cbName, onDone) {
-                const s = document.createElement('script');
-                const done = () => { try { document.body.removeChild(s); } catch (e) {} };
-                window[cbName] = function(data){ onDone && onDone(data); delete window[cbName]; done(); };
-                s.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
-                document.body.appendChild(s);
-            }
+        function jsonp(url, cbName, onDone) {
+            const s = document.createElement('script');
+            const done = () => { try { document.body.removeChild(s); } catch (e) {} };
+            window[cbName] = function(data){ onDone && onDone(data); delete window[cbName]; done(); };
+            s.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+            document.body.appendChild(s);
+        }
 
-            function loadSharedMenu() {
-                if (!STATE_URL) return;
-                const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
-                jsonp(STATE_URL, cb, function(data){
-                    if (!data || data.error) return;
-                    lastSync = data.ts || 0;
+        function loadSharedMenu() {
+            if (!STATE_URL) return;
+            const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+            jsonp(STATE_URL, cb, function(data){
+                if (!data || data.error) return;
+                lastSync = data.ts || 0;
+                if (Array.isArray(data.menuItems)) {
+                    menuItems = data.menuItems;
+                    initMenu();
+                }
+            });
+        }
+
+        function saveSharedMenu() {
+            if (!STATE_URL) return;
+            const payload = { ts: Date.now(), menuItems: menuItems };
+            const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+            const url = STATE_URL + (STATE_URL.includes('?') ? '&' : '?') + 'payload=' + encodeURIComponent(JSON.stringify(payload));
+            jsonp(url, cb, function(){ lastSync = payload.ts; });
+        }
+
+        function refreshSharedMenuIfChanged() {
+            if (!STATE_URL) return;
+            const prevTs = lastSync;
+            const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+            jsonp(STATE_URL, cb, function(data){
+                if (!data || data.error) return;
+                if (typeof data.ts === 'number' && data.ts > prevTs) {
+                    lastSync = data.ts;
                     if (Array.isArray(data.menuItems)) {
                         menuItems = data.menuItems;
-                        initMenu();
+                        renderMenu();
+                        renderSummary();
                     }
-                });
-            }
-
-            function saveSharedMenu() {
-                if (!STATE_URL) return;
-                const payload = { ts: Date.now(), menuItems: menuItems };
-                const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
-                const url = STATE_URL + (STATE_URL.includes('?') ? '&' : '?') + 'payload=' + encodeURIComponent(JSON.stringify(payload));
-                jsonp(url, cb, function(){ lastSync = payload.ts; });
-            }
-
-            function refreshSharedMenuIfChanged() {
-                if (!STATE_URL) return;
-                const prevTs = lastSync;
-                const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
-                jsonp(STATE_URL, cb, function(data){
-                    if (!data || data.error) return;
-                    if (typeof data.ts === 'number' && data.ts > prevTs) {
-                        lastSync = data.ts;
-                        if (Array.isArray(data.menuItems)) {
-                            menuItems = data.menuItems;
-                            renderMenu();
-                            renderSummary();
-                        }
-                    }
-                });
-            }
-
-            function startPolling() {
-                if (syncInterval) clearInterval(syncInterval);
-                syncInterval = setInterval(refreshSharedMenuIfChanged, 5000);
-            }
-
-            // Variables pour le mode édition
-            let isEditMode = false;
-            let tapCount = 0;
-            let tapTimeout;
-            let editingItemId = null;
-            const EDIT_PASSWORD = 'bloub';
-
-            // ===== INITIALISATION =====
-
-            function initMenu() {
-                renderMenu();
-                saveCart();
-                renderSummary();
-            }
-
-            // ===== FONCTIONS DE RENDU =====
-
-            function renderMenu() {
-                if (isEditMode) {
-                    renderMenuWithEditControls();
-                    return;
                 }
-                renderMenuNormal();
+            });
+        }
+
+        function startPolling() {
+            if (syncInterval) clearInterval(syncInterval);
+            syncInterval = setInterval(refreshSharedMenuIfChanged, 5000);
+        }
+
+        // Variables pour le mode édition
+        let isEditMode = false;
+        let tapCount = 0;
+        let tapTimeout;
+        let editingItemId = null;
+        const EDIT_PASSWORD = 'bloub';
+
+        // ===== INITIALISATION =====
+
+        function initMenu() {
+            renderMenu();
+            saveCart();
+            renderSummary();
+        }
+
+        // ===== FONCTIONS DE RENDU =====
+
+        function renderMenu() {
+            if (isEditMode) {
+                renderMenuWithEditControls();
+                return;
             }
+            renderMenuNormal();
+        }
 
-            function renderMenuNormal() {
-                const gridMadame = document.getElementById('menu-grid-madame');
-                const gridMonsieur = document.getElementById('menu-grid-monsieur');
+        function renderMenuNormal() {
+            const gridMadame = document.getElementById('menu-grid-madame');
+            const gridMonsieur = document.getElementById('menu-grid-monsieur');
 
-                if (menuItems.length === 0 && !isEditMode) {
-                    const emptyHtml = `
-                        <div style="grid-column: 1 / -1; text-align: center; opacity: 0.6; padding: 40px;">
-                            <div style="font-size: 2rem;">🍽️</div>
-                            <div style="font-size: 1.1rem; margin-top: 10px;">
-                                Menu en cours de préparation…
-                            </div>
-                            <div style="font-size: 0.9rem; margin-top: 5px;">
-                                (Activer le mode édition pour ajouter des articles)
-                            </div>
+            if (menuItems.length === 0 && !isEditMode) {
+                const emptyHtml = `
+                    <div style="grid-column: 1 / -1; text-align: center; opacity: 0.6; padding: 40px;">
+                        <div style="font-size: 2rem;">🍽️</div>
+                        <div style="font-size: 1.1rem; margin-top: 10px;">
+                            Menu en cours de préparation…
                         </div>
-                    `;
-                    gridMadame.innerHTML = emptyHtml;
-                    gridMonsieur.innerHTML = emptyHtml;
-                    renderSummary();
-                    return;
-                }
-
-                gridMadame.innerHTML = menuItems.map(item => `
-                    <div class="card cat-${item.cat}">
-                        <div class="head">${item.cat}</div>
-                        <div class="content">
-                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                            
-                            <div class="item-controls">
-                                ${item.type === 'radio' ? `
-                                    <div class="radio-group">
-                                        ${item.options.map(option => `
-                                            <label class="radio-container">
-                                                <input type="checkbox" name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${option}
-                                            </label>
-                                        `).join('')}
-                                    </div>
-                                ` : `
-                                    <div class="quantity-controls">
-                                        <button class="btn-qty" onclick="changeQty('madame', '${item.id}', -1)">-</button>
-                                        <span id="qty-madame-${item.id}">0</span>
-                                        <button class="btn-qty" onclick="changeQty('madame', '${item.id}', 1)">+</button>
-                                    </div>
-                                `}
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                // Générer le menu pour Monsieur
-                gridMonsieur.innerHTML = menuItems.map(item => `
-                    <div class="card cat-${item.cat}">
-                        <div class="head">${item.cat}</div>
-                        <div class="content">
-                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                            
-                            <div class="item-controls">
-                                ${item.type === 'radio' ? `
-                                    <div class="radio-group">
-                                        ${item.options.map(option => `
-                                            <label class="radio-container">
-                                                <input type="checkbox" name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${option}
-                                            </label>
-                                        `).join('')}
-                                    </div>
-                                ` : `
-                                    <div class="quantity-controls">
-                                        <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', -1)">-</button>
-                                        <span id="qty-monsieur-${item.id}">0</span>
-                                        <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', 1)">+</button>
-                                    </div>
-                                `}
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-                
-                // Restaurer les quantités affichées si une commande existe
-                restoreQuantities();
-                
-                // Mettre à jour le résumé
-                renderSummary();
-            }
-            
-            function restoreQuantities() {
-                // Restaurer les quantités pour Madame
-                Object.keys(order.madame).forEach(itemId => {
-                    const item = order.madame[itemId];
-                    if (item.qty) {
-                        const qtyElement = document.getElementById(`qty-madame-${itemId}`);
-                        if (qtyElement) qtyElement.textContent = item.qty;
-                    }
-                    if (item.option) {
-                        const checkbox = document.querySelector(`input[name="madame-${itemId}"][value="${item.option}"]`);
-                        if (checkbox) checkbox.checked = true;
-                    }
-                });
-                
-                // Restaurer les quantités pour Monsieur
-                Object.keys(order.monsieur).forEach(itemId => {
-                    const item = order.monsieur[itemId];
-                    if (item.qty) {
-                        const qtyElement = document.getElementById(`qty-monsieur-${itemId}`);
-                        if (qtyElement) qtyElement.textContent = item.qty;
-                    }
-                    if (item.option) {
-                        const checkbox = document.querySelector(`input[name="monsieur-${itemId}"][value="${item.option}"]`);
-                        if (checkbox) checkbox.checked = true;
-                    }
-                });
-            }
-
-            function switchTab(tab) {
-                // Mettre à jour les boutons
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
-                
-                // Mettre à jour le contenu
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                document.getElementById(`tab-${tab}`).classList.add('active');
-            }
-
-            function updateRadio(person, id, option, checked) {
-                if (checked) {
-                    // Si on coche une option, vérifier si c'est la même déjà sélectionnée
-                    if (order[person][id] && order[person][id].option === option) {
-                        // Désélectionner
-                        delete order[person][id];
-                        // Décocher la checkbox
-                        document.querySelector(`input[name="${person}-${id}"][value="${option}"]`).checked = false;
-                    } else {
-                        // Nouvelle sélection : décocher toutes les autres options du groupe
-                        document.querySelectorAll(`input[name="${person}-${id}"]`).forEach(cb => {
-                            cb.checked = false;
-                        });
-                        // Cocher l'option actuelle
-                        document.querySelector(`input[name="${person}-${id}"][value="${option}"]`).checked = true;
-                        // Enregistrer la sélection
-                        order[person][id] = { name: menuItems.find(m => m.id === id).name, option: option };
-                    }
-                } else {
-                    // Si on décoche, supprimer la sélection
-                    delete order[person][id];
-                }
-                renderSummary();
-            }
-
-            function changeQty(person, id, delta) {
-                if (!order[person][id]) order[person][id] = { name: menuItems.find(m => m.id === id).name, qty: 0 };
-                
-                // Limiter la quantité entre 0 et 2
-                order[person][id].qty = Math.max(0, Math.min(2, order[person][id].qty + delta));
-                
-                document.getElementById(`qty-${person}-${id}`).innerText = order[person][id].qty;
-                
-                if (order[person][id].qty === 0) delete order[person][id];
-                saveCart();
-                renderSummary();
-            }
-
-            function renderSummary() {
-                const container = document.getElementById('summary-items');
-                const countEl = document.getElementById('total-count');
-                
-                const madameItems = Object.keys(order.madame);
-                const monsieurItems = Object.keys(order.monsieur);
-                
-                if (madameItems.length === 0 && monsieurItems.length === 0) {
-                    container.innerHTML = `
-                        <div style="text-align: center; padding: 20px; opacity: 0.6;">
-                            <div style="font-size: 2rem; margin-bottom: 10px;">🛒</div>
-                            <div style="font-size: 1.1rem; font-style: italic;">Votre panier est vide...</div>
-                            <div style="font-size: 0.9rem; margin-top: 5px;">Sélectionnez des articles pour commencer</div>
-                        </div>
-                    `;
-                    countEl.innerText = '0';
-                    return;
-                }
-
-                let total = 0;
-                let html = '';
-
-                // Afficher les articles de Madame
-                if (madameItems.length > 0) {
-                    html += '<div style="margin-bottom: 20px;"><strong style="color: var(--pink-dark);">Madame :</strong></div>';
-                    html += madameItems.map((key, index) => {
-                        const item = order.madame[key];
-                        let details = '';
-                        if (item.option) {
-                            total += 1;
-                            details = `Option: ${item.option}`;
-                        } else if (item.qty) {
-                            total += item.qty;
-                            details = `Quantité: ${item.qty}`;
-                        }
-                        return `
-                            <div class="summary-item" style="animation-delay: ${index * 0.1}s">
-                                <div>
-                                    <strong>${item.name}</strong><br>
-                                    <small>${details}</small>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-
-                // Afficher les articles de Monsieur
-                if (monsieurItems.length > 0) {
-                    html += '<div style="margin-bottom: 20px;"><strong style="color: var(--pink-dark);">Monsieur :</strong></div>';
-                    html += monsieurItems.map((key, index) => {
-                        const item = order.monsieur[key];
-                        let details = '';
-                        if (item.option) {
-                            total += 1;
-                            details = `Option: ${item.option}`;
-                        } else if (item.qty) {
-                            total += item.qty;
-                            details = `Quantité: ${item.qty}`;
-                        }
-                        return `
-                            <div class="summary-item" style="animation-delay: ${(madameItems.length + index) * 0.1}s">
-                                <div>
-                                    <strong>${item.name}</strong><br>
-                                    <small>${details}</small>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-                
-                container.innerHTML = html;
-                countEl.innerText = total;
-            }
-
-            function clearCart() {
-                order = { madame: {}, monsieur: {} };
-                saveCart();
-                // Re-render menu to reset quantities/checkboxes to defaults
-                renderMenu();
-                renderSummary();
-            }
-
-            function confirmOrder() {
-                const madameItems = Object.keys(order.madame);
-                const monsieurItems = Object.keys(order.monsieur);
-                
-                if (madameItems.length === 0 && monsieurItems.length === 0) {
-                    alert("Votre sélection est vide !");
-                    return;
-                }
-                
-                // Afficher le modal de chargement
-                document.getElementById('loading-modal').style.display = 'flex';
-                
-                // Simuler l'envoi pendant 2 secondes
-                setTimeout(() => {
-                    // Cacher le modal de chargement
-                    document.getElementById('loading-modal').style.display = 'none';
-                    // Envoyer l'email
-                    sendOrderEmail();
-                    // Vider le panier local et rafraîchir l'UI
-                    clearCart();
-                    // Afficher le modal de confirmation avec animation de fondu
-                    const confirmationModal = document.getElementById('confirmation-modal');
-                    confirmationModal.style.display = 'flex';
-                    setTimeout(() => {
-                        confirmationModal.classList.add('show');
-                    }, 50);
-                }, 2000);
-            }
-
-            function sendOrderEmail() {
-                // Préparer les données de la commande
-                const orderData = {
-                    date: new Date().toLocaleDateString('fr-FR'),
-                    heure: new Date().toLocaleTimeString('fr-FR'),
-                    madame: {},
-                    monsieur: {},
-                    total: 0
-                };
-                
-                // Articles de Madame
-                const madameItems = Object.keys(order.madame);
-                madameItems.forEach(key => {
-                    const item = order.madame[key];
-                    orderData.madame[key] = {
-                        name: item.name,
-                        option: item.option || null,
-                        qty: item.qty || null
-                    };
-                    orderData.total++;
-                });
-                
-                // Articles de Monsieur
-                const monsieurItems = Object.keys(order.monsieur);
-                monsieurItems.forEach(key => {
-                    const item = order.monsieur[key];
-                    orderData.monsieur[key] = {
-                        name: item.name,
-                        option: item.option || null,
-                        qty: item.qty || null
-                    };
-                    orderData.total++;
-                });
-                
-                // URL de votre Google Apps Script déployé
-                const scriptUrl = 'https://script.google.com/macros/s/AKfycbwPF-yrDzBOr9HyGyKz2C2j_IaIqvMeV09E_db_gqxNIg5itdlUX42TPHS9bgX3e-M/exec';
-                
-                // Envoyer les données au Google Apps Script
-                fetch(scriptUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: 'ninotelephone1006@gmail.com',
-                        orderData: orderData
-                    }),
-                    mode: 'no-cors'
-                })
-                .then(response => {
-                    console.log('Email envoyé avec succès');
-                })
-                .catch(error => {
-                    console.error('Erreur lors de l\'envoi:', error);
-                    // En cas d'erreur, proposer le mailto comme fallback
-                    fallbackToMailto(orderData);
-                });
-            }
-
-            function fallbackToMailto(orderData) {
-                // Créer un email HTML avec images et design moderne
-                let emailContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Commande Petit-Déjeuner Romantique</title>
-        <style>
-            body {
-                font-family: 'Georgia', serif;
-                background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 50%, #FCE4EC 100%);
-                margin: 0;
-                padding: 20px;
-                color: #880E4F;
-            }
-            .container {
-                max-width: 600px;
-                margin: 0 auto;
-                background: white;
-                border-radius: 20px;
-                box-shadow: 0 10px 30px rgba(233, 30, 99, 0.2);
-                overflow: hidden;
-            }
-            .header {
-                background: linear-gradient(135deg, #E91E63, #F8BBD0);
-                padding: 40px 30px;
-                text-align: center;
-                position: relative;
-            }
-            .header::before {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=200&fit=crop') center/cover;
-                opacity: 0.3;
-            }
-            .header-content {
-                position: relative;
-                z-index: 1;
-            }
-            .header h1 {
-                color: white;
-                font-size: 2.5em;
-                margin: 0;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-                font-family: 'Dancing Script', cursive;
-            }
-            .header .subtitle {
-                color: white;
-                font-size: 1.2em;
-                margin-top: 10px;
-                opacity: 0.9;
-            }
-            .content {
-                padding: 30px;
-            }
-            .order-info {
-                background: #FCE4EC;
-                padding: 20px;
-                border-radius: 15px;
-                margin-bottom: 30px;
-                text-align: center;
-            }
-            .order-info h2 {
-                color: #E91E63;
-                margin: 0 0 15px 0;
-                font-size: 1.5em;
-            }
-            .order-meta {
-                display: flex;
-                justify-content: space-around;
-                margin-top: 15px;
-            }
-            .meta-item {
-                text-align: center;
-            }
-            .meta-icon {
-                font-size: 2em;
-                margin-bottom: 5px;
-            }
-            .section {
-                margin-bottom: 30px;
-                background: #FAFAFA;
-                border-radius: 15px;
-                padding: 20px;
-                border-left: 5px solid #E91E63;
-            }
-            .section h3 {
-                color: #E91E63;
-                margin: 0 0 20px 0;
-                font-size: 1.8em;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .item {
-                display: flex;
-                align-items: center;
-                padding: 12px;
-                margin: 10px 0;
-                background: white;
-                border-radius: 10px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                transition: transform 0.2s;
-            }
-            .item:hover {
-                transform: translateY(-2px);
-            }
-            .item-icon {
-                width: 40px;
-                height: 40px;
-                background: #F8BBD0;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-right: 15px;
-                font-size: 1.2em;
-            }
-            .item-details {
-                flex: 1;
-            }
-            .item-name {
-                font-weight: bold;
-                color: #880E4F;
-                font-size: 1.1em;
-            }
-            .item-options {
-                color: #666;
-                font-style: italic;
-                margin-top: 3px;
-            }
-            .summary {
-                background: linear-gradient(135deg, #E91E63, #F8BBD0);
-                color: white;
-                padding: 25px;
-                border-radius: 15px;
-                text-align: center;
-                margin-top: 30px;
-            }
-            .summary h3 {
-                margin: 0 0 15px 0;
-                font-size: 1.8em;
-            }
-            .total-count {
-                font-size: 2.5em;
-                font-weight: bold;
-                margin: 10px 0;
-            }
-            .footer {
-                text-align: center;
-                padding: 30px;
-                background: #F8BBD0;
-                color: #880E4F;
-            }
-            .footer-heart {
-                font-size: 2em;
-                margin-bottom: 10px;
-            }
-            .footer-text {
-                font-style: italic;
-                opacity: 0.8;
-            }
-            .divider {
-                text-align: center;
-                margin: 20px 0;
-                position: relative;
-            }
-            .divider::before {
-                content: "❦";
-                font-size: 1.5em;
-                color: #E91E63;
-                background: white;
-                padding: 0 20px;
-            }
-            .divider::after {
-                content: "";
-                position: absolute;
-                top: 50%;
-                left: 0;
-                right: 0;
-                height: 2px;
-                background: linear-gradient(90deg, transparent, #E91E63, transparent);
-                z-index: -1;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <div class="header-content">
-                    <h1>🌸 Commande Petit-Déjeuner Romantique 🌸</h1>
-                    <div class="subtitle">Un moment de douceur à deux</div>
-                </div>
-            </div>
-            
-            <div class="content">
-                <div class="order-info">
-                    <h2>📋 Détails de la Commande</h2>
-                    <div class="order-meta">
-                        <div class="meta-item">
-                            <div class="meta-icon">📅</div>
-                            <div><strong>Date</strong></div>
-                            <div>${orderData.date}</div>
-                        </div>
-                        <div class="meta-item">
-                            <div class="meta-icon">⏰</div>
-                            <div><strong>Heure</strong></div>
-                            <div>${orderData.heure}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="divider"></div>
-    `;
-
-                // Articles de Madame
-                const madameItems = Object.keys(orderData.madame);
-                if (madameItems.length > 0) {
-                    emailContent += `
-                <div class="section">
-                    <h3>👑 Sélection de Madame</h3>
-    `;
-                    madameItems.forEach(key => {
-                        const item = orderData.madame[key];
-                        let details = '';
-                        let icon = '🥐';
-                        
-                        if (item.option) {
-                            details = `<div class="item-options">Option: ${item.option}</div>`;
-                        } else if (item.qty) {
-                            details = `<div class="item-options">Quantité: ${item.qty}</div>`;
-                        }
-                        
-                        // Choisir une icône selon le type d'article
-                        if (item.name.toLowerCase().includes('café') || item.name.toLowerCase().includes('thé')) icon = '☕';
-                        else if (item.name.toLowerCase().includes('jus')) icon = '🧃';
-                        else if (item.name.toLowerCase().includes('pain') || item.name.toLowerCase().includes('croissant')) icon = '🥐';
-                        else if (item.name.toLowerCase().includes('œuf') || item.name.toLowerCase().includes('oeuf')) icon = '🥚';
-                        else if (item.name.toLowerCase().includes('bacon')) icon = '🥓';
-                        else if (item.name.toLowerCase().includes('yaourt')) icon = '🥛';
-                        else if (item.name.toLowerCase().includes('confiture') || item.name.toLowerCase().includes('nutella')) icon = '🍓';
-                        
-                        emailContent += `
-                    <div class="item">
-                        <div class="item-icon">${icon}</div>
-                        <div class="item-details">
-                            <div class="item-name">${item.name}</div>
-                            ${details}
-                        </div>
-                    </div>
-    `;
-                    });
-                    emailContent += `
-                </div>
-    `;
-                }
-                
-                // Articles de Monsieur
-                const monsieurItems = Object.keys(orderData.monsieur);
-                if (monsieurItems.length > 0) {
-                    emailContent += `
-                <div class="section">
-                    <h3>🤵 Sélection de Monsieur</h3>
-    `;
-                    monsieurItems.forEach(key => {
-                        const item = orderData.monsieur[key];
-                        let details = '';
-                        let icon = '🥐';
-                        
-                        if (item.option) {
-                            details = `<div class="item-options">Option: ${item.option}</div>`;
-                        } else if (item.qty) {
-                            details = `<div class="item-options">Quantité: ${item.qty}</div>`;
-                        }
-                        
-                        // Choisir une icône selon le type d'article
-                        if (item.name.toLowerCase().includes('café') || item.name.toLowerCase().includes('thé')) icon = '☕';
-                        else if (item.name.toLowerCase().includes('jus')) icon = '🧃';
-                        else if (item.name.toLowerCase().includes('pain') || item.name.toLowerCase().includes('croissant')) icon = '🥐';
-                        else if (item.name.toLowerCase().includes('œuf') || item.name.toLowerCase().includes('oeuf')) icon = '🥚';
-                        else if (item.name.toLowerCase().includes('bacon')) icon = '🥓';
-                        else if (item.name.toLowerCase().includes('yaourt')) icon = '🥛';
-                        else if (item.name.toLowerCase().includes('confiture') || item.name.toLowerCase().includes('nutella')) icon = '🍓';
-                        
-                        emailContent += `
-                    <div class="item">
-                        <div class="item-icon">${icon}</div>
-                        <div class="item-details">
-                            <div class="item-name">${item.name}</div>
-                            ${details}
-                        </div>
-                    </div>
-    `;
-                    });
-                    emailContent += `
-                </div>
-    `;
-                }
-                
-                emailContent += `
-                <div class="summary">
-                    <h3>📊 Récapitulatif</h3>
-                    <div class="total-count">${orderData.total} Articles</div>
-                    <div>Bonne dégustation !</div>
-                </div>
-            </div>
-            
-            <div class="footer">
-                <div class="footer-heart">💕</div>
-                <div class="footer-text">Merci pour votre commande romantique !</div>
-                <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.7;">Envoyé depuis l'application de petit-déjeuner</div>
-            </div>
-        </div>
-    </body>
-    </html>
-    `;
-                
-                // Encoder le contenu pour l'URL
-                const subject = encodeURIComponent("🌸 Commande Petit-Déjeuner Romantique - " + orderData.date);
-                const body = encodeURIComponent(emailContent);
-                
-                // Ouvrir le client email par défaut
-                window.location.href = `mailto:votre.email@example.com?subject=${subject}&body=${body}`;
-            }
-
-            function closeModal() {
-                const confirmationModal = document.getElementById('confirmation-modal');
-                confirmationModal.classList.remove('show');
-                setTimeout(() => {
-                    confirmationModal.style.display = 'none';
-                }, 500);
-            }
-
-            window.onload = function() {
-                ensureUserId();
-                loadCart();
-                loadSharedMenu();
-                initMenu();
-                setupEditModeDetection();
-                startPolling();
-            };
-
-            // ===== FONCTIONS MODE ÉDITION =====
-
-            function setupEditModeDetection() {
-                document.addEventListener('click', function(event) {
-                    // Ignorer les clics sur les boutons et inputs
-                    if (event.target.tagName === 'BUTTON' || event.target.tagName === 'INPUT' || event.target.type === 'checkbox') {
-                        return;
-                    }
-                    
-                    tapCount++;
-                    
-                    if (tapCount === 1) {
-                        tapTimeout = setTimeout(() => {
-                            tapCount = 0;
-                        }, 500);
-                    } else if (tapCount === 3) {
-                        clearTimeout(tapTimeout);
-                        tapCount = 0;
-                        showPasswordModal();
-                    }
-                });
-            }
-
-            function showPasswordModal() {
-                document.getElementById('password-modal').style.display = 'flex';
-                document.getElementById('password-input').value = '';
-                document.getElementById('password-input').focus();
-            }
-
-            function closePasswordModal() {
-                document.getElementById('password-modal').style.display = 'none';
-            }
-
-            function checkPassword() {
-                const password = document.getElementById('password-input').value;
-                if (password === EDIT_PASSWORD) {
-                    closePasswordModal();
-                    enableEditMode();
-                } else {
-                    alert('Mot de passe incorrect !');
-                    document.getElementById('password-input').value = '';
-                    document.getElementById('password-input').focus();
-                }
-            }
-
-            function enableEditMode() {
-                isEditMode = true;
-                document.body.classList.add('edit-mode');
-                document.getElementById('edit-mode-toggle').style.display = 'block';
-                renderMenu();
-            }
-
-            function exitEditMode() {
-                isEditMode = false;
-                document.body.classList.remove('edit-mode');
-                document.getElementById('edit-mode-toggle').style.display = 'none';
-                initMenu();
-            }
-
-            function renderMenuWithEditControls() {
-                // Générer le menu pour Madame avec contrôles d'édition
-                const gridMadame = document.getElementById('menu-grid-madame');
-                gridMadame.innerHTML = menuItems.map(item => `
-                    <div class="card cat-${item.cat}" data-item-id="${item.id}">
-                        <div class="edit-controls">
-                            <button class="edit-btn edit" onclick="editItem('${item.id}')" title="Modifier">✏️</button>
-                            <button class="edit-btn delete" onclick="deleteItem('${item.id}')" title="Supprimer">🗑️</button>
-                        </div>
-                        <div class="head">${item.cat}</div>
-                        <div class="content">
-                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                            
-                            <div class="item-controls">
-                                ${item.type === 'radio' ? `
-                                    <div class="radio-group">
-                                        ${item.options.map(option => `
-                                            <label class="radio-container">
-                                                <input type="checkbox" name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${option}
-                                            </label>
-                                        `).join('')}
-                                    </div>
-                                ` : `
-                                    <div class="quantity-controls">
-                                        <button class="btn-qty" onclick="changeQty('madame', '${item.id}', -1)">-</button>
-                                        <span id="qty-madame-${item.id}">0</span>
-                                        <button class="btn-qty" onclick="changeQty('madame', '${item.id}', 1)">+</button>
-                                    </div>
-                                `}
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                // Générer le menu pour Monsieur avec contrôles d'édition
-                const gridMonsieur = document.getElementById('menu-grid-monsieur');
-                gridMonsieur.innerHTML = menuItems.map(item => `
-                    <div class="card cat-${item.cat}" data-item-id="${item.id}">
-                        <div class="edit-controls">
-                            <button class="edit-btn edit" onclick="editItem('${item.id}')" title="Modifier">✏️</button>
-                            <button class="edit-btn delete" onclick="deleteItem('${item.id}')" title="Supprimer">🗑️</button>
-                        </div>
-                        <div class="head">${item.cat}</div>
-                        <div class="content">
-                            <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                            
-                            <div class="item-controls">
-                                ${item.type === 'radio' ? `
-                                    <div class="radio-group">
-                                        ${item.options.map(option => `
-                                            <label class="radio-container">
-                                                <input type="checkbox" name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${option}
-                                            </label>
-                                        `).join('')}
-                                    </div>
-                                ` : `
-                                    <div class="quantity-controls">
-                                        <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', -1)">-</button>
-                                        <span id="qty-monsieur-${item.id}">0</span>
-                                        <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', 1)">+</button>
-                                    </div>
-                                `}
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                // Ajouter le bouton pour ajouter un nouvel article
-                const addButtonHtml = `
-                    <div class="card" style="border: 3px dashed #4CAF50; background: #f0f8f0; cursor: pointer;" onclick="addNewItem()">
-                        <div class="content" style="text-align: center; padding: 40px;">
-                            <div style="font-size: 3rem; margin-bottom: 10px;">➕</div>
-                            <div style="font-size: 1.2rem; font-weight: bold; color: #4CAF50;">Ajouter un article</div>
+                        <div style="font-size: 0.9rem; margin-top: 5px;">
+                            (Activer le mode édition pour ajouter des articles)
                         </div>
                     </div>
                 `;
-                
-                gridMadame.innerHTML += addButtonHtml;
-                gridMonsieur.innerHTML += addButtonHtml;
+                gridMadame.innerHTML = emptyHtml;
+                gridMonsieur.innerHTML = emptyHtml;
+                renderSummary();
+                return;
             }
 
-            function editItem(itemId) {
-                const item = menuItems.find(m => m.id === itemId);
-                if (!item) return;
-                
-                editingItemId = itemId;
-                document.getElementById('edit-item-title').textContent = 'Modifier un article';
-                document.getElementById('item-name').value = item.name;
-                document.getElementById('item-category').value = item.cat;
-                
-                if (item.type === 'radio') {
-                    document.getElementById('item-type').value = 'radio';
-                    document.getElementById('item-options').value = item.options.join('\n');
-                    document.getElementById('options-group').style.display = 'block';
+            gridMadame.innerHTML = menuItems.map(item => `
+                <div class="card cat-${item.cat}">
+                    <div class="head">${item.cat}</div>
+                    <div class="content">
+                        <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                        
+                        <div class="item-controls">
+                            ${item.type === 'radio' ? `
+                                <div class="radio-group">
+                                    ${item.options.map(option => `
+                                        <label class="radio-container">
+                                            <input type="checkbox" name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${option}
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            ` : `
+                                <div class="quantity-controls">
+                                    <button class="btn-qty" onclick="changeQty('madame', '${item.id}', -1)">-</button>
+                                    <span id="qty-madame-${item.id}">0</span>
+                                    <button class="btn-qty" onclick="changeQty('madame', '${item.id}', 1)">+</button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Générer le menu pour Monsieur
+            gridMonsieur.innerHTML = menuItems.map(item => `
+                <div class="card cat-${item.cat}">
+                    <div class="head">${item.cat}</div>
+                    <div class="content">
+                        <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                        
+                        <div class="item-controls">
+                            ${item.type === 'radio' ? `
+                                <div class="radio-group">
+                                    ${item.options.map(option => `
+                                        <label class="radio-container">
+                                            <input type="checkbox" name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${option}
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            ` : `
+                                <div class="quantity-controls">
+                                    <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', -1)">-</button>
+                                    <span id="qty-monsieur-${item.id}">0</span>
+                                    <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', 1)">+</button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Restaurer les quantités affichées si une commande existe
+            restoreQuantities();
+            
+            // Mettre à jour le résumé
+            renderSummary();
+        }
+        
+        function restoreQuantities() {
+            // Restaurer les quantités pour Madame
+            Object.keys(order.madame).forEach(itemId => {
+                const item = order.madame[itemId];
+                if (item.qty) {
+                    const qtyElement = document.getElementById(`qty-madame-${itemId}`);
+                    if (qtyElement) qtyElement.textContent = item.qty;
+                }
+                if (item.option) {
+                    const checkbox = document.querySelector(`input[name="madame-${itemId}"][value="${item.option}"]`);
+                    if (checkbox) checkbox.checked = true;
+                }
+            });
+            
+            // Restaurer les quantités pour Monsieur
+            Object.keys(order.monsieur).forEach(itemId => {
+                const item = order.monsieur[itemId];
+                if (item.qty) {
+                    const qtyElement = document.getElementById(`qty-monsieur-${itemId}`);
+                    if (qtyElement) qtyElement.textContent = item.qty;
+                }
+                if (item.option) {
+                    const checkbox = document.querySelector(`input[name="monsieur-${itemId}"][value="${item.option}"]`);
+                    if (checkbox) checkbox.checked = true;
+                }
+            });
+        }
+
+        function switchTab(tab) {
+            // Mettre à jour les boutons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            
+            // Mettre à jour le contenu
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+        }
+
+        function updateRadio(person, id, option, checked) {
+            if (checked) {
+                // Si on coche une option, vérifier si c'est la même déjà sélectionnée
+                if (order[person][id] && order[person][id].option === option) {
+                    // Désélectionner
+                    delete order[person][id];
+                    // Décocher la checkbox
+                    document.querySelector(`input[name="${person}-${id}"][value="${option}"]`).checked = false;
                 } else {
-                    document.getElementById('item-type').value = 'quantity';
-                    document.getElementById('item-options').value = '';
-                    document.getElementById('options-group').style.display = 'none';
+                    // Nouvelle sélection : décocher toutes les autres options du groupe
+                    document.querySelectorAll(`input[name="${person}-${id}"]`).forEach(cb => {
+                        cb.checked = false;
+                    });
+                    // Cocher l'option actuelle
+                    document.querySelector(`input[name="${person}-${id}"][value="${option}"]`).checked = true;
+                    // Enregistrer la sélection
+                    order[person][id] = { name: menuItems.find(m => m.id === id).name, option: option };
+                }
+            } else {
+                // Si on décoche, supprimer la sélection
+                delete order[person][id];
+            }
+            renderSummary();
+        }
+
+        function changeQty(person, id, delta) {
+            if (!order[person][id]) order[person][id] = { name: menuItems.find(m => m.id === id).name, qty: 0 };
+            
+            // Limiter la quantité entre 0 et 2
+            order[person][id].qty = Math.max(0, Math.min(2, order[person][id].qty + delta));
+            
+            document.getElementById(`qty-${person}-${id}`).innerText = order[person][id].qty;
+            
+            if (order[person][id].qty === 0) delete order[person][id];
+            saveCart();
+            renderSummary();
+        }
+
+        function renderSummary() {
+            const container = document.getElementById('summary-items');
+            const countEl = document.getElementById('total-count');
+            
+            const madameItems = Object.keys(order.madame);
+            const monsieurItems = Object.keys(order.monsieur);
+            
+            if (madameItems.length === 0 && monsieurItems.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; opacity: 0.6;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">🛒</div>
+                        <div style="font-size: 1.1rem; font-style: italic;">Votre panier est vide...</div>
+                        <div style="font-size: 0.9rem; margin-top: 5px;">Sélectionnez des articles pour commencer</div>
+                    </div>
+                `;
+                countEl.innerText = '0';
+                return;
+            }
+
+            let total = 0;
+            let html = '';
+
+            // Afficher les articles de Madame
+            if (madameItems.length > 0) {
+                html += '<div style="margin-bottom: 20px;"><strong style="color: var(--pink-dark);">Madame :</strong></div>';
+                html += madameItems.map((key, index) => {
+                    const item = order.madame[key];
+                    let details = '';
+                    if (item.option) {
+                        total += 1;
+                        details = `Option: ${item.option}`;
+                    } else if (item.qty) {
+                        total += item.qty;
+                        details = `Quantité: ${item.qty}`;
+                    }
+                    return `
+                        <div class="summary-item" style="animation-delay: ${index * 0.1}s">
+                            <div>
+                                <strong>${item.name}</strong><br>
+                                <small>${details}</small>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Afficher les articles de Monsieur
+            if (monsieurItems.length > 0) {
+                html += '<div style="margin-bottom: 20px;"><strong style="color: var(--pink-dark);">Monsieur :</strong></div>';
+                html += monsieurItems.map((key, index) => {
+                    const item = order.monsieur[key];
+                    let details = '';
+                    if (item.option) {
+                        total += 1;
+                        details = `Option: ${item.option}`;
+                    } else if (item.qty) {
+                        total += item.qty;
+                        details = `Quantité: ${item.qty}`;
+                    }
+                    return `
+                        <div class="summary-item" style="animation-delay: ${(madameItems.length + index) * 0.1}s">
+                            <div>
+                                <strong>${item.name}</strong><br>
+                                <small>${details}</small>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            container.innerHTML = html;
+            countEl.innerText = total;
+        }
+
+        function clearCart() {
+            order = { madame: {}, monsieur: {} };
+            saveCart();
+            // Re-render menu to reset quantities/checkboxes to defaults
+            renderMenu();
+            renderSummary();
+        }
+
+        function confirmOrder() {
+            const madameItems = Object.keys(order.madame);
+            const monsieurItems = Object.keys(order.monsieur);
+            
+            if (madameItems.length === 0 && monsieurItems.length === 0) {
+                alert("Votre sélection est vide !");
+                return;
+            }
+            
+            // Afficher le modal de chargement
+            document.getElementById('loading-modal').style.display = 'flex';
+            
+            // Simuler l'envoi pendant 2 secondes
+            setTimeout(() => {
+                // Cacher le modal de chargement
+                document.getElementById('loading-modal').style.display = 'none';
+                // Envoyer l'email
+                sendOrderEmail();
+                // Vider le panier local et rafraîchir l'UI
+                clearCart();
+                // Afficher le modal de confirmation avec animation de fondu
+                const confirmationModal = document.getElementById('confirmation-modal');
+                confirmationModal.style.display = 'flex';
+                setTimeout(() => {
+                    confirmationModal.classList.add('show');
+                }, 50);
+            }, 2000);
+        }
+
+        function sendOrderEmail() {
+            // Préparer les données de la commande
+            const orderData = {
+                date: new Date().toLocaleDateString('fr-FR'),
+                heure: new Date().toLocaleTimeString('fr-FR'),
+                madame: {},
+                monsieur: {},
+                total: 0
+            };
+            
+            // Articles de Madame
+            const madameItems = Object.keys(order.madame);
+            madameItems.forEach(key => {
+                const item = order.madame[key];
+                orderData.madame[key] = {
+                    name: item.name,
+                    option: item.option || null,
+                    qty: item.qty || null
+                };
+                orderData.total++;
+            });
+            
+            // Articles de Monsieur
+            const monsieurItems = Object.keys(order.monsieur);
+            monsieurItems.forEach(key => {
+                const item = order.monsieur[key];
+                orderData.monsieur[key] = {
+                    name: item.name,
+                    option: item.option || null,
+                    qty: item.qty || null
+                };
+                orderData.total++;
+            });
+            
+            // URL de votre Google Apps Script déployé
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbxMdnwgE-OSypuGt0SJBP8lt7sN-frL_-q1MSo_pIPlM4XDPPEJEYt2YLbagdeKIbXa/exec';
+            
+            // Envoyer les données au Google Apps Script
+            fetch(scriptUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: 'ninotelephone1006@gmail.com',
+                    orderData: orderData
+                }),
+                mode: 'no-cors'
+            })
+            .then(response => {
+                console.log('Email envoyé avec succès');
+            })
+            .catch(error => {
+                console.error('Erreur lors de l\'envoi:', error);
+                // En cas d'erreur, proposer le mailto comme fallback
+                fallbackToMailto(orderData);
+            });
+        }
+
+        function fallbackToMailto(orderData) {
+            // Créer un email HTML avec images et design moderne
+            let emailContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Commande Petit-Déjeuner Romantique</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 50%, #FCE4EC 100%);
+            margin: 0;
+            padding: 20px;
+            color: #880E4F;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(233, 30, 99, 0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #E91E63, #F8BBD0);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=200&fit=crop') center/cover;
+            opacity: 0.3;
+        }
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        .header h1 {
+            color: white;
+            font-size: 2.5em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-family: 'Dancing Script', cursive;
+        }
+        .header .subtitle {
+            color: white;
+            font-size: 1.2em;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 30px;
+        }
+        .order-info {
+            background: #FCE4EC;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .order-info h2 {
+            color: #E91E63;
+            margin: 0 0 15px 0;
+            font-size: 1.5em;
+        }
+        .order-meta {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        .meta-item {
+            text-align: center;
+        }
+        .meta-icon {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        .section {
+            margin-bottom: 30px;
+            background: #FAFAFA;
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid #E91E63;
+        }
+        .section h3 {
+            color: #E91E63;
+            margin: 0 0 20px 0;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .item:hover {
+            transform: translateY(-2px);
+        }
+        .item-icon {
+            width: 40px;
+            height: 40px;
+            background: #F8BBD0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+        .item-details {
+            flex: 1;
+        }
+        .item-name {
+            font-weight: bold;
+            color: #880E4F;
+            font-size: 1.1em;
+        }
+        .item-options {
+            color: #666;
+            font-style: italic;
+            margin-top: 3px;
+        }
+        .summary {
+            background: linear-gradient(135deg, #E91E63, #F8BBD0);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .summary h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.8em;
+        }
+        .total-count {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #F8BBD0;
+            color: #880E4F;
+        }
+        .footer-heart {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .footer-text {
+            font-style: italic;
+            opacity: 0.8;
+        }
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        .divider::before {
+            content: "❦";
+            font-size: 1.5em;
+            color: #E91E63;
+            background: white;
+            padding: 0 20px;
+        }
+        .divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #E91E63, transparent);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>🌸 Commande Petit-Déjeuner Romantique 🌸</h1>
+                <div class="subtitle">Un moment de douceur à deux</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="order-info">
+                <h2>📋 Détails de la Commande</h2>
+                <div class="order-meta">
+                    <div class="meta-item">
+                        <div class="meta-icon">📅</div>
+                        <div><strong>Date</strong></div>
+                        <div>${orderData.date}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">⏰</div>
+                        <div><strong>Heure</strong></div>
+                        <div>${orderData.heure}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+`;
+
+            // Articles de Madame
+            const madameItems = Object.keys(orderData.madame);
+            if (madameItems.length > 0) {
+                emailContent += `
+            <div class="section">
+                <h3>👑 Sélection de Madame</h3>
+`;
+                madameItems.forEach(key => {
+                    const item = orderData.madame[key];
+                    let details = '';
+                    let icon = '🥐';
+                    
+                    if (item.option) {
+                        details = `<div class="item-options">Option: ${item.option}</div>`;
+                    } else if (item.qty) {
+                        details = `<div class="item-options">Quantité: ${item.qty}</div>`;
+                    }
+                    
+                    // Choisir une icône selon le type d'article
+                    if (item.name.toLowerCase().includes('café') || item.name.toLowerCase().includes('thé')) icon = '☕';
+                    else if (item.name.toLowerCase().includes('jus')) icon = '🧃';
+                    else if (item.name.toLowerCase().includes('pain') || item.name.toLowerCase().includes('croissant')) icon = '🥐';
+                    else if (item.name.toLowerCase().includes('œuf') || item.name.toLowerCase().includes('oeuf')) icon = '🥚';
+                    else if (item.name.toLowerCase().includes('bacon')) icon = '🥓';
+                    else if (item.name.toLowerCase().includes('yaourt')) icon = '🥛';
+                    else if (item.name.toLowerCase().includes('confiture') || item.name.toLowerCase().includes('nutella')) icon = '🍓';
+                    
+                    emailContent += `
+                <div class="item">
+                    <div class="item-icon">${icon}</div>
+                    <div class="item-details">
+                        <div class="item-name">${item.name}</div>
+                        ${details}
+                    </div>
+                </div>
+`;
+                });
+                emailContent += `
+            </div>
+`;
+            }
+            
+            // Articles de Monsieur
+            const monsieurItems = Object.keys(orderData.monsieur);
+            if (monsieurItems.length > 0) {
+                emailContent += `
+            <div class="section">
+                <h3>🤵 Sélection de Monsieur</h3>
+`;
+                monsieurItems.forEach(key => {
+                    const item = orderData.monsieur[key];
+                    let details = '';
+                    let icon = '🥐';
+                    
+                    if (item.option) {
+                        details = `<div class="item-options">Option: ${item.option}</div>`;
+                    } else if (item.qty) {
+                        details = `<div class="item-options">Quantité: ${item.qty}</div>`;
+                    }
+                    
+                    // Choisir une icône selon le type d'article
+                    if (item.name.toLowerCase().includes('café') || item.name.toLowerCase().includes('thé')) icon = '☕';
+                    else if (item.name.toLowerCase().includes('jus')) icon = '🧃';
+                    else if (item.name.toLowerCase().includes('pain') || item.name.toLowerCase().includes('croissant')) icon = '🥐';
+                    else if (item.name.toLowerCase().includes('œuf') || item.name.toLowerCase().includes('oeuf')) icon = '🥚';
+                    else if (item.name.toLowerCase().includes('bacon')) icon = '🥓';
+                    else if (item.name.toLowerCase().includes('yaourt')) icon = '🥛';
+                    else if (item.name.toLowerCase().includes('confiture') || item.name.toLowerCase().includes('nutella')) icon = '🍓';
+                    
+                    emailContent += `
+                <div class="item">
+                    <div class="item-icon">${icon}</div>
+                    <div class="item-details">
+                        <div class="item-name">${item.name}</div>
+                        ${details}
+                    </div>
+                </div>
+`;
+                });
+                emailContent += `
+            </div>
+`;
+            }
+            
+            emailContent += `
+            <div class="summary">
+                <h3>📊 Récapitulatif</h3>
+                <div class="total-count">${orderData.total} Articles</div>
+                <div>Bonne dégustation !</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-heart">💕</div>
+            <div class="footer-text">Merci pour votre commande romantique !</div>
+            <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.7;">Envoyé depuis l'application de petit-déjeuner</div>
+        </div>
+    </div>
+</body>
+</html>
+`;
+            
+            // Encoder le contenu pour l'URL
+            const subject = encodeURIComponent("🌸 Commande Petit-Déjeuner Romantique - " + orderData.date);
+            const body = encodeURIComponent(emailContent);
+            
+            // Ouvrir le client email par défaut
+            window.location.href = `mailto:votre.email@example.com?subject=${subject}&body=${body}`;
+        }
+
+        function closeModal() {
+            const confirmationModal = document.getElementById('confirmation-modal');
+            confirmationModal.classList.remove('show');
+            setTimeout(() => {
+                confirmationModal.style.display = 'none';
+            }, 500);
+        }
+
+        window.onload = function() {
+            ensureUserId();
+            loadCart();
+            loadSharedMenu();
+            initMenu();
+            setupEditModeDetection();
+            startPolling();
+        };
+
+        // ===== FONCTIONS MODE ÉDITION =====
+
+        function setupEditModeDetection() {
+            document.addEventListener('click', function(event) {
+                // Ignorer les clics sur les boutons et inputs
+                if (event.target.tagName === 'BUTTON' || event.target.tagName === 'INPUT' || event.target.type === 'checkbox') {
+                    return;
                 }
                 
-                document.getElementById('edit-item-modal').style.display = 'flex';
-            }
+                tapCount++;
+                
+                if (tapCount === 1) {
+                    tapTimeout = setTimeout(() => {
+                        tapCount = 0;
+                    }, 500);
+                } else if (tapCount === 3) {
+                    clearTimeout(tapTimeout);
+                    tapCount = 0;
+                    showPasswordModal();
+                }
+            });
+        }
 
-            function addNewItem() {
-                editingItemId = null;
-                document.getElementById('edit-item-title').textContent = 'Ajouter un nouvel article';
-                document.getElementById('item-name').value = '';
-                document.getElementById('item-category').value = 'viennoiserie';
+        function showPasswordModal() {
+            document.getElementById('password-modal').style.display = 'flex';
+            document.getElementById('password-input').value = '';
+            document.getElementById('password-input').focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').style.display = 'none';
+        }
+
+        function checkPassword() {
+            const password = document.getElementById('password-input').value;
+            if (password === EDIT_PASSWORD) {
+                closePasswordModal();
+                enableEditMode();
+            } else {
+                alert('Mot de passe incorrect !');
+                document.getElementById('password-input').value = '';
+                document.getElementById('password-input').focus();
+            }
+        }
+
+        function enableEditMode() {
+            isEditMode = true;
+            document.body.classList.add('edit-mode');
+            document.getElementById('edit-mode-toggle').style.display = 'block';
+            renderMenu();
+        }
+
+        function exitEditMode() {
+            isEditMode = false;
+            document.body.classList.remove('edit-mode');
+            document.getElementById('edit-mode-toggle').style.display = 'none';
+            initMenu();
+        }
+
+        function renderMenuWithEditControls() {
+            // Générer le menu pour Madame avec contrôles d'édition
+            const gridMadame = document.getElementById('menu-grid-madame');
+            gridMadame.innerHTML = menuItems.map(item => `
+                <div class="card cat-${item.cat}" data-item-id="${item.id}">
+                    <div class="edit-controls">
+                        <button class="edit-btn edit" onclick="editItem('${item.id}')" title="Modifier">✏️</button>
+                        <button class="edit-btn delete" onclick="deleteItem('${item.id}')" title="Supprimer">🗑️</button>
+                    </div>
+                    <div class="head">${item.cat}</div>
+                    <div class="content">
+                        <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                        
+                        <div class="item-controls">
+                            ${item.type === 'radio' ? `
+                                <div class="radio-group">
+                                    ${item.options.map(option => `
+                                        <label class="radio-container">
+                                            <input type="checkbox" name="madame-${item.id}" value="${option}" onchange="updateRadio('madame', '${item.id}', '${option}', this.checked)"> ${option}
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            ` : `
+                                <div class="quantity-controls">
+                                    <button class="btn-qty" onclick="changeQty('madame', '${item.id}', -1)">-</button>
+                                    <span id="qty-madame-${item.id}">0</span>
+                                    <button class="btn-qty" onclick="changeQty('madame', '${item.id}', 1)">+</button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Générer le menu pour Monsieur avec contrôles d'édition
+            const gridMonsieur = document.getElementById('menu-grid-monsieur');
+            gridMonsieur.innerHTML = menuItems.map(item => `
+                <div class="card cat-${item.cat}" data-item-id="${item.id}">
+                    <div class="edit-controls">
+                        <button class="edit-btn edit" onclick="editItem('${item.id}')" title="Modifier">✏️</button>
+                        <button class="edit-btn delete" onclick="deleteItem('${item.id}')" title="Supprimer">🗑️</button>
+                    </div>
+                    <div class="head">${item.cat}</div>
+                    <div class="content">
+                        <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
+                        
+                        <div class="item-controls">
+                            ${item.type === 'radio' ? `
+                                <div class="radio-group">
+                                    ${item.options.map(option => `
+                                        <label class="radio-container">
+                                            <input type="checkbox" name="monsieur-${item.id}" value="${option}" onchange="updateRadio('monsieur', '${item.id}', '${option}', this.checked)"> ${option}
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            ` : `
+                                <div class="quantity-controls">
+                                    <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', -1)">-</button>
+                                    <span id="qty-monsieur-${item.id}">0</span>
+                                    <button class="btn-qty" onclick="changeQty('monsieur', '${item.id}', 1)">+</button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Ajouter le bouton pour ajouter un nouvel article
+            const addButtonHtml = `
+                <div class="card" style="border: 3px dashed #4CAF50; background: #f0f8f0; cursor: pointer;" onclick="addNewItem()">
+                    <div class="content" style="text-align: center; padding: 40px;">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">➕</div>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #4CAF50;">Ajouter un article</div>
+                    </div>
+                </div>
+            `;
+            
+            gridMadame.innerHTML += addButtonHtml;
+            gridMonsieur.innerHTML += addButtonHtml;
+        }
+
+        function editItem(itemId) {
+            const item = menuItems.find(m => m.id === itemId);
+            if (!item) return;
+            
+            editingItemId = itemId;
+            document.getElementById('edit-item-title').textContent = 'Modifier un article';
+            document.getElementById('item-name').value = item.name;
+            document.getElementById('item-category').value = item.cat;
+            
+            if (item.type === 'radio') {
+                document.getElementById('item-type').value = 'radio';
+                document.getElementById('item-options').value = item.options.join('\n');
+                document.getElementById('options-group').style.display = 'block';
+            } else {
                 document.getElementById('item-type').value = 'quantity';
                 document.getElementById('item-options').value = '';
                 document.getElementById('options-group').style.display = 'none';
-                document.getElementById('edit-item-modal').style.display = 'flex';
             }
+            
+            document.getElementById('edit-item-modal').style.display = 'flex';
+        }
 
-            function deleteItem(itemId) {
-                if (confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
-                    const index = menuItems.findIndex(m => m.id === itemId);
-                    if (index > -1) {
-                        menuItems.splice(index, 1);
-                        // Supprimer aussi des commandes en cours
-                        delete order.madame[itemId];
-                        delete order.monsieur[itemId];
-                        renderMenuWithEditControls();
-                        renderSummary();
-                        saveCart();
-                        saveSharedMenu();
-                    }
+        function addNewItem() {
+            editingItemId = null;
+            document.getElementById('edit-item-title').textContent = 'Ajouter un nouvel article';
+            document.getElementById('item-name').value = '';
+            document.getElementById('item-category').value = 'viennoiserie';
+            document.getElementById('item-type').value = 'quantity';
+            document.getElementById('item-options').value = '';
+            document.getElementById('options-group').style.display = 'none';
+            document.getElementById('edit-item-modal').style.display = 'flex';
+        }
+
+        function deleteItem(itemId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+                const index = menuItems.findIndex(m => m.id === itemId);
+                if (index > -1) {
+                    menuItems.splice(index, 1);
+                    // Supprimer aussi des commandes en cours
+                    delete order.madame[itemId];
+                    delete order.monsieur[itemId];
+                    renderMenuWithEditControls();
+                    renderSummary();
+                    saveCart();
+                    saveSharedMenu();
                 }
             }
+        }
 
-            function toggleOptionsField() {
-                const type = document.getElementById('item-type').value;
-                const optionsGroup = document.getElementById('options-group');
-                optionsGroup.style.display = type === 'radio' ? 'block' : 'none';
+        function toggleOptionsField() {
+            const type = document.getElementById('item-type').value;
+            const optionsGroup = document.getElementById('options-group');
+            optionsGroup.style.display = type === 'radio' ? 'block' : 'none';
+        }
+
+        function saveItem() {
+            const name = document.getElementById('item-name').value.trim();
+            const category = document.getElementById('item-category').value;
+            const type = document.getElementById('item-type').value;
+            const optionsText = document.getElementById('item-options').value.trim();
+            
+            if (!name) {
+                alert('Veuillez entrer un nom pour l\'article.');
+                return;
             }
-
-            function saveItem() {
-                const name = document.getElementById('item-name').value.trim();
-                const category = document.getElementById('item-category').value;
-                const type = document.getElementById('item-type').value;
-                const optionsText = document.getElementById('item-options').value.trim();
-                
-                if (!name) {
-                    alert('Veuillez entrer un nom pour l\'article.');
-                    return;
-                }
-                
-                if (type === 'radio' && !optionsText) {
-                    alert('Veuillez entrer au moins une option pour le type radio.');
-                    return;
-                }
-                
-                const options = type === 'radio' ? optionsText.split('\n').filter(opt => opt.trim()) : undefined;
-                
-                if (editingItemId) {
-                    // Modifier un article existant
-                    const item = menuItems.find(m => m.id === editingItemId);
-                    if (item) {
-                        item.name = name;
-                        item.cat = category;
-                        item.type = type;
-                        item.options = options;
-                        
-                        // Supprimer l'ancien type s'il a changé
-                        if (type === 'quantity') {
-                            delete item.options;
-                        }
-                    }
-                } else {
-                    // Ajouter un nouvel article
-                    const newItem = {
-                        id: 'custom-' + Date.now(),
-                        name: name,
-                        cat: category,
-                        type: type // ✅ AJOUT CRUCIAL
-                    };
+            
+            if (type === 'radio' && !optionsText) {
+                alert('Veuillez entrer au moins une option pour le type radio.');
+                return;
+            }
+            
+            const options = type === 'radio' ? optionsText.split('\n').filter(opt => opt.trim()) : undefined;
+            
+            if (editingItemId) {
+                // Modifier un article existant
+                const item = menuItems.find(m => m.id === editingItemId);
+                if (item) {
+                    item.name = name;
+                    item.cat = category;
+                    item.type = type;
+                    item.options = options;
                     
-                    if (type === 'radio') {
-                        newItem.type = 'radio';
-                        newItem.options = options;
+                    // Supprimer l'ancien type s'il a changé
+                    if (type === 'quantity') {
+                        delete item.options;
                     }
-                    
-                    menuItems.push(newItem);
+                }
+            } else {
+                // Ajouter un nouvel article
+                const newItem = {
+                    id: 'custom-' + Date.now(),
+                    name: name,
+                    cat: category,
+                    type: type // ✅ AJOUT CRUCIAL
+                };
+                
+                if (type === 'radio') {
+                    newItem.type = 'radio';
+                    newItem.options = options;
                 }
                 
-                closeEditModal();
-                renderMenuWithEditControls();
-                renderSummary();
-                saveSharedMenu();
+                menuItems.push(newItem);
             }
+            
+            closeEditModal();
+            renderMenuWithEditControls();
+            renderSummary();
+            saveSharedMenu();
+        }
 
-            function closeEditModal() {
-                document.getElementById('edit-item-modal').style.display = 'none';
-                editingItemId = null;
+        function closeEditModal() {
+            document.getElementById('edit-item-modal').style.display = 'none';
+            editingItemId = null;
+        }
+
+        // Gérer la touche Entrée dans le champ du mot de passe
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('password-input');
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        checkPassword();
+                    }
+                });
             }
+        });
 
-            // Gérer la touche Entrée dans le champ du mot de passe
-            document.addEventListener('DOMContentLoaded', function() {
-                const passwordInput = document.getElementById('password-input');
-                if (passwordInput) {
-                    passwordInput.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            checkPassword();
-                        }
-                    });
-                }
-            });
+    </script>
+</body>
+</html>
 
-        </script>
-    </body>
-    </html>
-
-    <!-- deploy -->
+<!-- deploy -->
