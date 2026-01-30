@@ -419,21 +419,20 @@
             transform: translateY(-1px);
         }
 
-        .button-secondary {
+        .button-reset {
             width: 100%;
             padding: 10px;
+            margin-top: 10px;
             background: var(--pink-light);
             border: 2px solid var(--pink-medium);
             border-radius: var(--border-radius-soft);
-            font-family: var(--font-body);
             font-weight: 700;
-            font-size: 0.95rem;
-            color: var(--text-color);
             cursor: pointer;
+            color: var(--text-color);
             transition: all 0.3s ease;
         }
 
-        .button-secondary:hover {
+        .button-reset:hover {
             background: var(--pink-medium);
             transform: translateY(-2px);
         }
@@ -443,20 +442,18 @@
             filter: grayscale(1);
         }
 
-        .out-of-stock .item-controls {
-            pointer-events: none;
-        }
-
         .out-of-stock-badge {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: #f44336;
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            background: rgba(244, 67, 54, 0.95);
             color: #fff;
             font-weight: 800;
             font-size: 12px;
-            border: 2px solid #cc0000;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            z-index: 5;
         }
 
         /* Modal Romantique */
@@ -830,23 +827,13 @@
             color: var(--text-color);
         }
 
-        .form-group input[type="text"],
-        .form-group input[type="password"],
-        .form-group input[type="email"],
-        .form-group input[type="number"],
-        .form-group select {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 10px;
             border: 2px solid var(--pink-medium);
             border-radius: var(--border-radius-soft);
             font-size: 14px;
             font-family: var(--font-body);
-        }
-
-        .form-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            padding: 0;
         }
 
         .form-group textarea {
@@ -912,8 +899,7 @@
                             Articles : <span id="total-count">0</span>
                         </div>
                         <button class="button-send" onclick="confirmOrder()">Envoyer</button>
-                        <div style="height:10px;"></div>
-                        <button class="button-secondary" onclick="clearCart()">Vider la sélection</button>
+                        <button class="button-reset" onclick="clearCart()">Vider la sélection</button>
                     </div>
                 </div>
             </aside>
@@ -968,6 +954,12 @@
                     <input type="text" id="item-name" required>
                 </div>
                 <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="item-out-of-stock">
+                        Rupture de stock
+                    </label>
+                </div>
+                <div class="form-group">
                     <label for="item-category">Catégorie :</label>
                     <select id="item-category">
                         <option value="viennoiserie">Viennoiserie</option>
@@ -982,12 +974,6 @@
                         <option value="quantity">Quantité (0-2)</option>
                         <option value="radio">Options uniques</option>
                     </select>
-                </div>
-                <div class="form-group">
-                    <label for="item-outofstock">Disponibilité :</label>
-                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-                        <input type="checkbox" id="item-outofstock"> Rupture de stock
-                    </label>
                 </div>
                 <div class="form-group" id="options-group" style="display: none;">
                     <label for="item-options">Options (une par ligne) :</label>
@@ -1024,7 +1010,7 @@
         let lastSync = 0;
         let syncInterval = null;
         let userId = null;
-        let STATE_URL = 'https://script.google.com/macros/s/AKfycbxaCpdky5trcIZFztE8kI38PPsBIztELG5xW2P5fBgeuU1bqZVMVlFaUMW9pvsOiIPV/exec';
+        let STATE_URL = 'https://script.google.com/macros/s/AKfycbylW8r0CStUFMv1T-JzqapU_9ltY5iEGkeuiiTmLcv-dg_UCGQY-fmsn8S_SFeakTMJ1Q/exec';
 
         let selectedGite = 'cocon';
 
@@ -1079,6 +1065,13 @@
             } catch (e) {}
         }
 
+        function removeItemFromOrders(itemId) {
+            try {
+                if (order && order.madame) delete order.madame[itemId];
+                if (order && order.monsieur) delete order.monsieur[itemId];
+            } catch (e) {}
+        }
+
         function jsonp(url, cbName, onDone) {
             const s = document.createElement('script');
             const done = () => { try { document.body.removeChild(s); } catch (e) {} };
@@ -1095,6 +1088,8 @@
                 lastSync = data.ts || 0;
                 if (Array.isArray(data.menuItems)) {
                     menuItems = data.menuItems;
+                    // Si des items sont en rupture, s'assurer qu'ils ne restent pas dans le panier
+                    menuItems.forEach(function(it){ if (it && it.outOfStock) removeItemFromOrders(it.id); });
                     initMenu();
                 }
             });
@@ -1155,23 +1150,7 @@
             renderMenuNormal();
         }
 
-        function pruneOutOfStockFromOrder() {
-            const byId = {};
-            menuItems.forEach(function(it){ byId[it.id] = it; });
-
-            ['madame','monsieur'].forEach(function(person){
-                Object.keys(order[person] || {}).forEach(function(itemId){
-                    const mi = byId[itemId];
-                    if (mi && mi.outOfStock) {
-                        delete order[person][itemId];
-                    }
-                });
-            });
-            saveCart();
-        }
-
         function renderMenuNormal() {
-            pruneOutOfStockFromOrder();
             const gridMadame = document.getElementById('menu-grid-madame');
             const gridMonsieur = document.getElementById('menu-grid-monsieur');
 
@@ -1195,10 +1174,10 @@
 
             gridMadame.innerHTML = menuItems.map(item => `
                 <div class="card cat-${item.cat} ${item.outOfStock ? 'out-of-stock' : ''}">
+                    ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                        ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
@@ -1224,10 +1203,10 @@
             // Générer le menu pour Monsieur
             gridMonsieur.innerHTML = menuItems.map(item => `
                 <div class="card cat-${item.cat} ${item.outOfStock ? 'out-of-stock' : ''}">
+                    ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                        ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
@@ -1488,7 +1467,7 @@
             });
             
             // URL de votre Google Apps Script déployé
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbwum5PFj3qWYHzPpYhc9uAFDLaLVDVABC8ezBiv2wiNwsv1Rltf8F2uySYmdtOwHUyP/exec';
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbxMdnwgE-OSypuGt0SJBP8lt7sN-frL_-q1MSo_pIPlM4XDPPEJEYt2YLbagdeKIbXa/exec';
             
             // Envoyer les données au Google Apps Script
             fetch(scriptUrl, {
@@ -1928,7 +1907,6 @@
         }
 
         function renderMenuWithEditControls() {
-            pruneOutOfStockFromOrder();
             // Générer le menu pour Madame avec contrôles d'édition
             const gridMadame = document.getElementById('menu-grid-madame');
             gridMadame.innerHTML = menuItems.map(item => `
@@ -1937,10 +1915,10 @@
                         <button class="edit-btn edit" onclick="editItem('${item.id}')" title="Modifier">✏️</button>
                         <button class="edit-btn delete" onclick="deleteItem('${item.id}')" title="Supprimer">🗑️</button>
                     </div>
+                    ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                        ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
@@ -1971,10 +1949,10 @@
                         <button class="edit-btn edit" onclick="editItem('${item.id}')" title="Modifier">✏️</button>
                         <button class="edit-btn delete" onclick="deleteItem('${item.id}')" title="Supprimer">🗑️</button>
                     </div>
+                    ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                        ${item.outOfStock ? '<div class="out-of-stock-badge">Rupture de stock</div>' : ''}
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
@@ -2018,8 +1996,8 @@
             editingItemId = itemId;
             document.getElementById('edit-item-title').textContent = 'Modifier un article';
             document.getElementById('item-name').value = item.name;
+            document.getElementById('item-out-of-stock').checked = !!item.outOfStock;
             document.getElementById('item-category').value = item.cat;
-            document.getElementById('item-outofstock').checked = !!item.outOfStock;
             
             if (item.type === 'radio') {
                 document.getElementById('item-type').value = 'radio';
@@ -2038,10 +2016,10 @@
             editingItemId = null;
             document.getElementById('edit-item-title').textContent = 'Ajouter un nouvel article';
             document.getElementById('item-name').value = '';
+            document.getElementById('item-out-of-stock').checked = false;
             document.getElementById('item-category').value = 'viennoiserie';
             document.getElementById('item-type').value = 'quantity';
             document.getElementById('item-options').value = '';
-            document.getElementById('item-outofstock').checked = false;
             document.getElementById('options-group').style.display = 'none';
             document.getElementById('edit-item-modal').style.display = 'flex';
         }
@@ -2070,10 +2048,10 @@
 
         function saveItem() {
             const name = document.getElementById('item-name').value.trim();
+            const outOfStock = !!document.getElementById('item-out-of-stock').checked;
             const category = document.getElementById('item-category').value;
             const type = document.getElementById('item-type').value;
             const optionsText = document.getElementById('item-options').value.trim();
-            const outOfStock = !!document.getElementById('item-outofstock').checked;
             
             if (!name) {
                 alert('Veuillez entrer un nom pour l\'article.');
@@ -2092,14 +2070,19 @@
                 const item = menuItems.find(m => m.id === editingItemId);
                 if (item) {
                     item.name = name;
+                    item.outOfStock = outOfStock;
                     item.cat = category;
                     item.type = type;
                     item.options = options;
-                    item.outOfStock = outOfStock;
                     
                     // Supprimer l'ancien type s'il a changé
                     if (type === 'quantity') {
                         delete item.options;
+                    }
+
+                    if (item.outOfStock) {
+                        removeItemFromOrders(editingItemId);
+                        saveCart();
                     }
                 }
             } else {
@@ -2107,11 +2090,10 @@
                 const newItem = {
                     id: 'custom-' + Date.now(),
                     name: name,
+                    outOfStock: outOfStock,
                     cat: category,
                     type: type // ✅ AJOUT CRUCIAL
                 };
-
-                newItem.outOfStock = outOfStock;
                 
                 if (type === 'radio') {
                     newItem.type = 'radio';
