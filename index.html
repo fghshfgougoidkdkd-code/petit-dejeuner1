@@ -653,6 +653,36 @@
             transform: translateY(-2px);
         }
 
+        .gite-selector {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--white);
+            border: 2px solid var(--pink-medium);
+            border-radius: 25px;
+            padding: 8px 12px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .gite-selector label {
+            font-weight: 700;
+            font-size: 12px;
+            margin-right: 8px;
+            color: var(--text-color);
+        }
+
+        .gite-selector select {
+            border: 2px solid var(--pink-medium);
+            border-radius: 18px;
+            padding: 6px 10px;
+            background: var(--pink-light);
+            color: var(--text-color);
+            font-weight: 700;
+            outline: none;
+        }
+
         /* Modal mot de passe */
         .password-modal {
             display: none;
@@ -901,13 +931,6 @@
                         <option value="radio">Options uniques</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="item-gite">Gîte :</label>
-                    <select id="item-gite">
-                        <option value="cocon">Gîte Cocon</option>
-                        <option value="colombier">Gîte Colombier</option>
-                    </select>
-                </div>
                 <div class="form-group" id="options-group" style="display: none;">
                     <label for="item-options">Options (une par ligne) :</label>
                     <textarea id="item-options" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
@@ -923,6 +946,14 @@
     <!-- Bouton quitter mode édition -->
     <button id="edit-mode-toggle" class="edit-mode-toggle" onclick="exitEditMode()">Quitter le mode édition</button>
 
+    <div id="gite-selector" class="gite-selector">
+        <label for="gite-select">Gîte :</label>
+        <select id="gite-select" onchange="setSelectedGite(this.value)">
+            <option value="cocon">Cocon</option>
+            <option value="colombier">Colombier</option>
+        </select>
+    </div>
+
     <script>
         
         let menuItems = [];
@@ -936,6 +967,28 @@
         let syncInterval = null;
         let userId = null;
         let STATE_URL = 'https://script.google.com/macros/s/AKfycbylW8r0CStUFMv1T-JzqapU_9ltY5iEGkeuiiTmLcv-dg_UCGQY-fmsn8S_SFeakTMJ1Q/exec';
+
+        let selectedGite = 'cocon';
+
+        function giteKey() {
+            if (!userId) ensureUserId();
+            return 'pd_gite_' + userId;
+        }
+
+        function loadSelectedGite() {
+            try {
+                const v = localStorage.getItem(giteKey());
+                if (v === 'cocon' || v === 'colombier') selectedGite = v;
+            } catch (e) {}
+            const sel = document.getElementById('gite-select');
+            if (sel) sel.value = selectedGite;
+        }
+
+        function setSelectedGite(v) {
+            if (v !== 'cocon' && v !== 'colombier') return;
+            selectedGite = v;
+            try { localStorage.setItem(giteKey(), selectedGite); } catch (e) {}
+        }
 
         function ensureUserId() {
             const k = 'pd_user_id';
@@ -1071,7 +1124,6 @@
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                        <div style="font-size: 0.75rem; opacity: 0.8; margin: -6px 0 10px 0;">${item.gite ? ('Gîte : ' + (item.gite === 'cocon' ? 'Cocon' : 'Colombier')) : ''}</div>
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
@@ -1100,7 +1152,6 @@
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                        <div style="font-size: 0.75rem; opacity: 0.8; margin: -6px 0 10px 0;">${item.gite ? ('Gîte : ' + (item.gite === 'cocon' ? 'Cocon' : 'Colombier')) : ''}</div>
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
@@ -1184,8 +1235,7 @@
                     // Cocher l'option actuelle
                     document.querySelector(`input[name="${person}-${id}"][value="${option}"]`).checked = true;
                     // Enregistrer la sélection
-                    const mi = menuItems.find(m => m.id === id);
-                    order[person][id] = { name: mi ? mi.name : id, option: option, gite: mi ? (mi.gite || null) : null };
+                    order[person][id] = { name: menuItems.find(m => m.id === id).name, option: option };
                 }
             } else {
                 // Si on décoche, supprimer la sélection
@@ -1195,10 +1245,7 @@
         }
 
         function changeQty(person, id, delta) {
-            if (!order[person][id]) {
-                const mi = menuItems.find(m => m.id === id);
-                order[person][id] = { name: mi ? mi.name : id, qty: 0, gite: mi ? (mi.gite || null) : null };
-            }
+            if (!order[person][id]) order[person][id] = { name: menuItems.find(m => m.id === id).name, qty: 0 };
             
             // Limiter la quantité entre 0 et 2
             order[person][id].qty = Math.max(0, Math.min(2, order[person][id].qty + delta));
@@ -1238,7 +1285,6 @@
                 html += madameItems.map((key, index) => {
                     const item = order.madame[key];
                     let details = '';
-                    const giteLabel = item.gite ? (item.gite === 'cocon' ? 'Gîte Cocon' : 'Gîte Colombier') : '';
                     if (item.option) {
                         total += 1;
                         details = `Option: ${item.option}`;
@@ -1250,7 +1296,7 @@
                         <div class="summary-item" style="animation-delay: ${index * 0.1}s">
                             <div>
                                 <strong>${item.name}</strong><br>
-                                <small>${details}${giteLabel ? (' — ' + giteLabel) : ''}</small>
+                                <small>${details}</small>
                             </div>
                         </div>
                     `;
@@ -1263,7 +1309,6 @@
                 html += monsieurItems.map((key, index) => {
                     const item = order.monsieur[key];
                     let details = '';
-                    const giteLabel = item.gite ? (item.gite === 'cocon' ? 'Gîte Cocon' : 'Gîte Colombier') : '';
                     if (item.option) {
                         total += 1;
                         details = `Option: ${item.option}`;
@@ -1275,7 +1320,7 @@
                         <div class="summary-item" style="animation-delay: ${(madameItems.length + index) * 0.1}s">
                             <div>
                                 <strong>${item.name}</strong><br>
-                                <small>${details}${giteLabel ? (' — ' + giteLabel) : ''}</small>
+                                <small>${details}</small>
                             </div>
                         </div>
                     `;
@@ -1328,6 +1373,7 @@
             const orderData = {
                 date: new Date().toLocaleDateString('fr-FR'),
                 heure: new Date().toLocaleTimeString('fr-FR'),
+                gite: selectedGite,
                 madame: {},
                 monsieur: {},
                 total: 0
@@ -1340,8 +1386,7 @@
                 orderData.madame[key] = {
                     name: item.name,
                     option: item.option || null,
-                    qty: item.qty || null,
-                    gite: item.gite || null
+                    qty: item.qty || null
                 };
                 orderData.total++;
             });
@@ -1353,14 +1398,13 @@
                 orderData.monsieur[key] = {
                     name: item.name,
                     option: item.option || null,
-                    qty: item.qty || null,
-                    gite: item.gite || null
+                    qty: item.qty || null
                 };
                 orderData.total++;
             });
             
             // URL de votre Google Apps Script déployé
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbzTAIHIIBk0gLz_CQO0bBDefyYeA5Kykun_dU2ZcQL9Mu7zzcb9XWY9gDLEOFyI0jHg/exec';
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbxKk6g04OksTofZitKCxxEaOSj5VEDBfLBLQHltBd4PjueLhr4QrVOEJXAZb4zdq9M7/exec';
             
             // Envoyer les données au Google Apps Script
             fetch(scriptUrl, {
@@ -1598,6 +1642,11 @@
                         <div><strong>Heure</strong></div>
                         <div>${orderData.heure}</div>
                     </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">🏡</div>
+                        <div><strong>Gîte</strong></div>
+                        <div>${orderData.gite === 'colombier' ? 'Colombier' : 'Cocon'}</div>
+                    </div>
                 </div>
             </div>
 
@@ -1725,6 +1774,7 @@
         window.onload = function() {
             ensureUserId();
             loadCart();
+            loadSelectedGite();
             loadSharedMenu();
             initMenu();
             setupEditModeDetection();
@@ -1780,6 +1830,8 @@
             isEditMode = true;
             document.body.classList.add('edit-mode');
             document.getElementById('edit-mode-toggle').style.display = 'block';
+            document.getElementById('gite-selector').style.display = 'block';
+            loadSelectedGite();
             renderMenu();
         }
 
@@ -1787,6 +1839,7 @@
             isEditMode = false;
             document.body.classList.remove('edit-mode');
             document.getElementById('edit-mode-toggle').style.display = 'none';
+            document.getElementById('gite-selector').style.display = 'none';
             initMenu();
         }
 
@@ -1802,7 +1855,6 @@
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                        <div style="font-size: 0.75rem; opacity: 0.8; margin: -6px 0 10px 0;">${item.gite ? ('Gîte : ' + (item.gite === 'cocon' ? 'Cocon' : 'Colombier')) : ''}</div>
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
@@ -1836,7 +1888,6 @@
                     <div class="head">${item.cat}</div>
                     <div class="content">
                         <div style="font-size: 1.2rem; margin-bottom: 10px;">${item.name}</div>
-                        <div style="font-size: 0.75rem; opacity: 0.8; margin: -6px 0 10px 0;">${item.gite ? ('Gîte : ' + (item.gite === 'cocon' ? 'Cocon' : 'Colombier')) : ''}</div>
                         
                         <div class="item-controls">
                             ${item.type === 'radio' ? `
@@ -1881,7 +1932,6 @@
             document.getElementById('edit-item-title').textContent = 'Modifier un article';
             document.getElementById('item-name').value = item.name;
             document.getElementById('item-category').value = item.cat;
-            document.getElementById('item-gite').value = item.gite || 'cocon';
             
             if (item.type === 'radio') {
                 document.getElementById('item-type').value = 'radio';
@@ -1902,7 +1952,6 @@
             document.getElementById('item-name').value = '';
             document.getElementById('item-category').value = 'viennoiserie';
             document.getElementById('item-type').value = 'quantity';
-            document.getElementById('item-gite').value = 'cocon';
             document.getElementById('item-options').value = '';
             document.getElementById('options-group').style.display = 'none';
             document.getElementById('edit-item-modal').style.display = 'flex';
@@ -1934,7 +1983,6 @@
             const name = document.getElementById('item-name').value.trim();
             const category = document.getElementById('item-category').value;
             const type = document.getElementById('item-type').value;
-            const gite = document.getElementById('item-gite').value;
             const optionsText = document.getElementById('item-options').value.trim();
             
             if (!name) {
@@ -1956,7 +2004,6 @@
                     item.name = name;
                     item.cat = category;
                     item.type = type;
-                    item.gite = gite;
                     item.options = options;
                     
                     // Supprimer l'ancien type s'il a changé
@@ -1970,8 +2017,7 @@
                     id: 'custom-' + Date.now(),
                     name: name,
                     cat: category,
-                    type: type,
-                    gite: gite
+                    type: type // ✅ AJOUT CRUCIAL
                 };
                 
                 if (type === 'radio') {
