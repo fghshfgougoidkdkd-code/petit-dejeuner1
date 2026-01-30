@@ -924,31 +924,10 @@
             monsieur: {}
         };
 
-        const STORAGE_KEY = 'pd_order_session';
-
-        function loadOrder() {
-            try {
-                const raw = sessionStorage.getItem(STORAGE_KEY);
-                if (!raw) return;
-                const data = JSON.parse(raw);
-                if (data && typeof data === 'object' && data.madame && data.monsieur) {
-                    order = {
-                        madame: data.madame || {},
-                        monsieur: data.monsieur || {}
-                    };
-                }
-            } catch (e) {
-                console.warn('Impossible de charger le panier de la session:', e);
-            }
-        }
-
-        function saveOrder() {
-            try {
-                sessionStorage.setItem(STORAGE_KEY, JSON.stringify(order));
-            } catch (e) {
-                console.warn('Impossible d\'enregistrer le panier de la session:', e);
-            }
-        }
+        // Identifiant local pour isoler le panier de chaque utilisateur
+        const USER_ID_KEY = 'breakfast_user_id';
+        const ORDER_STORAGE_PREFIX = 'breakfast_order_';
+        let userId = null;
 
         // Variables pour le mode édition
         let isEditMode = false;
@@ -959,59 +938,16 @@
 
         // ===== INITIALISATION =====
 
-        const MENU_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0NncEARZ5Ar_eQb6tnPPpYe-U_CEz6P4h35BA_tUE6nMtSKi18GM9kwF1xdmlcCHE/exec';
-
-        async function loadMenu() {
-            try {
-                const res = await fetch(MENU_SCRIPT_URL + '?action=getMenu', { method: 'GET' });
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                const data = await res.json();
-                if (Array.isArray(data.items)) {
-                    menuItems = data.items;
-                }
-            } catch (e) {
-                console.warn('Chargement du menu distant impossible, utilisation locale seulement:', e);
-            }
-        }
-
-        async function saveMenu() {
-            try {
-                await fetch(MENU_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'saveMenu', items: menuItems })
-                });
-            } catch (e) {
-                console.warn('Sauvegarde du menu distant échouée:', e);
-            }
-        }
-
-        let lastMenuHash = '';
-
-        function hashMenu(items) {
-            try { return JSON.stringify(items); } catch { return ''; }
-        }
-
-        function setupMenuPolling() {
-            setInterval(async () => {
-                const before = hashMenu(menuItems);
-                await loadMenu();
-                const after = hashMenu(menuItems);
-                if (before !== after) {
-                    renderMenu();
-                    renderSummary();
-                }
-            }, 20000);
-        }
-
         function initMenu() {
-            loadOrder();
-            // Charger le menu partagé puis rendre
-            loadMenu().finally(() => {
-                renderMenu();
-                renderSummary();
-                setupMenuPolling();
-            });
+            // Charger/Générer un identifiant utilisateur local
+            userId = loadOrCreateUserId();
+            // Charger le panier enregistré localement pour cet utilisateur
+            const savedOrder = loadOrderFromStorage();
+            if (savedOrder) {
+                order = savedOrder;
+            }
+            renderMenu();
+            renderSummary();
         }
 
         // ===== FONCTIONS DE RENDU =====
@@ -1168,7 +1104,7 @@
                 // Si on décoche, supprimer la sélection
                 delete order[person][id];
             }
-            saveOrder();
+            persistOrder();
             renderSummary();
         }
 
@@ -1181,7 +1117,7 @@
             document.getElementById(`qty-${person}-${id}`).innerText = order[person][id].qty;
             
             if (order[person][id].qty === 0) delete order[person][id];
-            saveOrder();
+            persistOrder();
             renderSummary();
         }
 
@@ -1257,6 +1193,7 @@
             
             container.innerHTML = html;
             countEl.innerText = total;
+            persistOrder();
         }
 
         function confirmOrder() {
@@ -1870,9 +1807,8 @@
                     delete order.madame[itemId];
                     delete order.monsieur[itemId];
                     renderMenuWithEditControls();
-                    saveOrder();
+                    persistOrder();
                     renderSummary();
-                    saveMenu();
                 }
             }
         }
@@ -1932,9 +1868,6 @@
                 menuItems.push(newItem);
             }
             
-            // Sauvegarder le menu partagé pour propager les changements
-            saveMenu();
-
             closeEditModal();
             renderMenuWithEditControls();
             renderSummary();
@@ -1956,6 +1889,47 @@
                 });
             }
         });
+
+        // ===== PERSISTANCE PANIER PRIVÉ (localStorage) =====
+        function loadOrCreateUserId() {
+            try {
+                let id = localStorage.getItem(USER_ID_KEY);
+                if (!id) {
+                    id = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : ('user-' + Math.random().toString(36).slice(2));
+                    localStorage.setItem(USER_ID_KEY, id);
+                }
+                return id;
+            } catch (e) {
+                // Fallback si localStorage indisponible
+                return 'user-' + Math.random().toString(36).slice(2);
+            }
+        }
+
+        function storageKey() {
+            return ORDER_STORAGE_PREFIX + userId;
+        }
+
+        function loadOrderFromStorage() {
+            try {
+                const raw = localStorage.getItem(storageKey());
+                if (!raw) return null;
+                const parsed = JSON.parse(raw);
+                return {
+                    madame: parsed && parsed.madame ? parsed.madame : {},
+                    monsieur: parsed && parsed.monsieur ? parsed.monsieur : {}
+                };
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function persistOrder() {
+            try {
+                localStorage.setItem(storageKey(), JSON.stringify(order));
+            } catch (e) {
+                // Ignorer erreurs de quota / mode privé
+            }
+        }
 
     </script>
 </body>
