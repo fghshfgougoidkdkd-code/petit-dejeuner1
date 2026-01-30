@@ -1270,6 +1270,14 @@
             countEl.innerText = total;
         }
 
+        function clearCart() {
+            order = { madame: {}, monsieur: {} };
+            saveCart();
+            // Re-render menu to reset quantities/checkboxes to defaults
+            renderMenu();
+            renderSummary();
+        }
+
         function confirmOrder() {
             const madameItems = Object.keys(order.madame);
             const monsieurItems = Object.keys(order.monsieur);
@@ -1288,6 +1296,8 @@
                 document.getElementById('loading-modal').style.display = 'none';
                 // Envoyer l'email
                 sendOrderEmail();
+                // Vider le panier local et rafraîchir l'UI
+                clearCart();
                 // Afficher le modal de confirmation avec animation de fondu
                 const confirmationModal = document.getElementById('confirmation-modal');
                 confirmationModal.style.display = 'flex';
