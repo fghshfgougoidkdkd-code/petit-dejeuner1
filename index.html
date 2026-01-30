@@ -989,6 +989,28 @@
             jsonp(url, cb, function(){ lastSync = payload.ts; });
         }
 
+        function refreshSharedMenuIfChanged() {
+            if (!STATE_URL) return;
+            const prevTs = lastSync;
+            const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+            jsonp(STATE_URL, cb, function(data){
+                if (!data || data.error) return;
+                if (typeof data.ts === 'number' && data.ts > prevTs) {
+                    lastSync = data.ts;
+                    if (Array.isArray(data.menuItems)) {
+                        menuItems = data.menuItems;
+                        renderMenu();
+                        renderSummary();
+                    }
+                }
+            });
+        }
+
+        function startPolling() {
+            if (syncInterval) clearInterval(syncInterval);
+            syncInterval = setInterval(refreshSharedMenuIfChanged, 5000);
+        }
+
         // Variables pour le mode édition
         let isEditMode = false;
         let tapCount = 0;
@@ -1678,6 +1700,7 @@
             loadSharedMenu();
             initMenu();
             setupEditModeDetection();
+            startPolling();
         };
 
         // ===== FONCTIONS MODE ÉDITION =====
