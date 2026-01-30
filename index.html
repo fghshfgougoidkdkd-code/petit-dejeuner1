@@ -959,10 +959,59 @@
 
         // ===== INITIALISATION =====
 
+        const MENU_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0NncEARZ5Ar_eQb6tnPPpYe-U_CEz6P4h35BA_tUE6nMtSKi18GM9kwF1xdmlcCHE/exec';
+
+        async function loadMenu() {
+            try {
+                const res = await fetch(MENU_SCRIPT_URL + '?action=getMenu', { method: 'GET' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                if (Array.isArray(data.items)) {
+                    menuItems = data.items;
+                }
+            } catch (e) {
+                console.warn('Chargement du menu distant impossible, utilisation locale seulement:', e);
+            }
+        }
+
+        async function saveMenu() {
+            try {
+                await fetch(MENU_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'saveMenu', items: menuItems })
+                });
+            } catch (e) {
+                console.warn('Sauvegarde du menu distant échouée:', e);
+            }
+        }
+
+        let lastMenuHash = '';
+
+        function hashMenu(items) {
+            try { return JSON.stringify(items); } catch { return ''; }
+        }
+
+        function setupMenuPolling() {
+            setInterval(async () => {
+                const before = hashMenu(menuItems);
+                await loadMenu();
+                const after = hashMenu(menuItems);
+                if (before !== after) {
+                    renderMenu();
+                    renderSummary();
+                }
+            }, 20000);
+        }
+
         function initMenu() {
             loadOrder();
-            renderMenu();
-            renderSummary();
+            // Charger le menu partagé puis rendre
+            loadMenu().finally(() => {
+                renderMenu();
+                renderSummary();
+                setupMenuPolling();
+            });
         }
 
         // ===== FONCTIONS DE RENDU =====
@@ -1823,6 +1872,7 @@
                     renderMenuWithEditControls();
                     saveOrder();
                     renderSummary();
+                    saveMenu();
                 }
             }
         }
@@ -1882,6 +1932,9 @@
                 menuItems.push(newItem);
             }
             
+            // Sauvegarder le menu partagé pour propager les changements
+            saveMenu();
+
             closeEditModal();
             renderMenuWithEditControls();
             renderSummary();
